@@ -94,7 +94,7 @@ public class PlayerListener implements Listener{
 		JsonMessage json = new JsonMessage(format);
 
 		// Format player
-		json.replace("%player%").text(name);
+		json.replace("%player%").text(parseMessage(chat.player_format, player));
 		if(chat.player_hover) json.hover(chat.player_hover_text);
 		if(chat.player_click) json.click().chatSuggestion("/w " + name + " ").close();
 		json.then();
@@ -165,7 +165,7 @@ public class PlayerListener implements Listener{
 	}
 
 	public static String getColor(String prefix){
-		int index = prefix.indexOf('&');
+		int index = prefix.lastIndexOf('&');
 		if(index > -1)
 			return ChatColor.translateAlternateColorCodes('&', prefix.substring(index, index+2));
 		return "";

@@ -36,6 +36,7 @@ public class Chat extends JavaPlugin{
 	public String 			first_message_broadcast;
 	
 	public String 			chat_format;
+	public String 			player_format;
 	
 	public boolean			player_tab;
 	public boolean			player_click;
@@ -67,7 +68,10 @@ public class Chat extends JavaPlugin{
 			return;
 		}
 		
-		Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + ChatColor.GREEN + (useGroupManager ? "GroupManager" : "PermissionEx") + " detected.");
+		if(useGroupManager || usePermissionEx)
+			Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + ChatColor.GREEN + (useGroupManager ? "GroupManager" : "PermissionEx") + " detected.");
+		else
+			Bukkit.getConsoleSender().sendMessage("[" + this.getName() + "] " + ChatColor.GREEN + "Zero permissions plugin detected.");
 		
 		// If GroupManager
 		if(useGroupManager){

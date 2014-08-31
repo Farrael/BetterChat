@@ -1,0 +1,19 @@
+name: BetterChat
+main: farrael.fr.chat.Chat
+version: 1.0.0
+description: The Chat plugin
+commands:
+    chat:
+        description: Default plugin commands.
+permissions:
+    chat.*:
+        description: Gives access to all commands.
+        children:
+            chat.admin: true
+            chat.color: true
+    chat.admin:
+        description: Allows you to edit plugin.
+        default: op
+    chat.color:
+        description: Allows you write with color.
+        default: op

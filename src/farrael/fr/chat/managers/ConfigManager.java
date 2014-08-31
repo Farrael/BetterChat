@@ -109,7 +109,7 @@ public class ConfigManager {
 		this.plugin.chat_format	= (String) this.fileManager.getData(type, "chat-format", "%player% &f: %message%");
 		this.fileManager.setComment(type, "chat-format", true, "Message lors de la premiere connection ( player only ).");
 		
-		this.plugin.player_format	= (String) this.fileManager.getData(type, "player-format", "%player%");
+		this.plugin.player_format	= (String) this.fileManager.getData(type, "player-format", "%playername%");
 		this.fileManager.setComment(type, "player-format", true, "Message d'affichage du joueur.");
 				
 		this.plugin.player_tab				= (boolean) this.fileManager.getData(type, "player-tab", true);

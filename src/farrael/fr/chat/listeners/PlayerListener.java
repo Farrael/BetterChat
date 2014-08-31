@@ -77,6 +77,7 @@ public class PlayerListener implements Listener{
 		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
 
 		message = message.replaceAll("%player%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
+		message = message.replaceAll("%playername%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
 		message = message.replaceAll("%server%", Bukkit.getServerName());
 		message = message.replaceAll("%suffix%", player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "");
 		message = message.replaceAll("%prefix%", player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "");
@@ -104,6 +105,7 @@ public class PlayerListener implements Listener{
 		json.replace("%suffix%").text(player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "").then();
 		json.replace("%prefix%").text(player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "").then();
 		json.replace("%color%").text(player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "").then();
+		json.replaceInText("%playername%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
 		json.replaceInText("%time%", date).then();
 
 		if(player.hasPermission("chat.color"))

@@ -109,8 +109,11 @@ public class ConfigManager {
 		this.plugin.chat_format	= (String) this.fileManager.getData(type, "chat-format", "%player% &f: %message%");
 		this.fileManager.setComment(type, "chat-format", true, "Message lors de la premiere connection ( player only ).");
 		
-		this.plugin.player_format	= (String) this.fileManager.getData(type, "player-format", "%playername%");
-		this.fileManager.setComment(type, "player-format", true, "Message d'affichage du joueur.");
+		this.plugin.player_color			= (boolean) this.fileManager.getData(type, "player-color", true);
+		this.fileManager.setComment(type, "player-color", true, "Change le display name avec la couleur du prefix.");
+		
+		this.plugin.console_chat			= (boolean) this.fileManager.getData(type, "console-chat", true);
+		this.fileManager.setComment(type, "console-chat", true, "Affiche les message dans la console.");
 				
 		this.plugin.player_tab				= (boolean) this.fileManager.getData(type, "player-tab", true);
 		this.fileManager.setComment(type, "player-tab", true, "Modifie la couleur d'un joueur dans le menu tabulation.");

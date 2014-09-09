@@ -36,7 +36,8 @@ public class Chat extends JavaPlugin{
 	public String 			first_message_broadcast;
 	
 	public String 			chat_format;
-	public String 			player_format;
+	public boolean 			player_color;
+	public boolean 			console_chat;
 	
 	public boolean			player_tab;
 	public boolean			player_click;

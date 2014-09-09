@@ -87,7 +87,7 @@ public class PlayerListener implements Listener{
 	}
 
 	public void sendChatMessage(String format, String message, Player player){
-		String name = ChatColor.stripColor(player.getDisplayName() != null ? player.getDisplayName() : player.getName());
+		String name = player.getName();
 		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
 		Location l  = player.getLocation();
 		message 	= message.replace("\\", "\\\\\\\\").replace("\"", "\\\\\"");
@@ -95,7 +95,7 @@ public class PlayerListener implements Listener{
 		JsonMessage json = new JsonMessage(format);
 
 		// Format player
-		json.replace("%player%").text(parseMessage(chat.player_format, player));
+		json.replace("%player%").text(getDisplayName(player, chat.player_color));
 		if(chat.player_hover) json.hover(chat.player_hover_text);
 		if(chat.player_click) json.click().chatSuggestion("/w " + name + " ").close();
 		json.then();
@@ -123,6 +123,10 @@ public class PlayerListener implements Listener{
 
 		//Close and Send
 		json.finish().sendToAll();
+		
+		//Send Consol Message
+		if(chat.console_chat)
+			Bukkit.getConsoleSender().sendMessage(getDisplayName(player, chat.player_color) + " : " + message);
 	}
 
 	public static void setChatName(Player player){
@@ -132,9 +136,8 @@ public class PlayerListener implements Listener{
 
 		if(prefix != ""){
 			String color = getColor(prefix);
-			if(color != ""){
+			if(color != "")
 				player.setMetadata("color", new FixedMetadataValue(Chat.instance, color));
-			}
 			player.setPlayerListName(color + player.getName());
 		}
 
@@ -175,6 +178,10 @@ public class PlayerListener implements Listener{
 
 	public static String nonNull(String value){
 		return value != null ? value : "";
+	}
+	
+	public static String getDisplayName(Player player, boolean color){
+		return (color ? (player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "") : "") + player.getDisplayName() != null ? player.getDisplayName() : player.getName();
 	}
 
 }

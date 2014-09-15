@@ -1,5 +1,8 @@
 package farrael.fr.chat.classes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.server.v1_7_R3.ChatSerializer;
 import net.minecraft.server.v1_7_R3.NBTTagCompound;
 import net.minecraft.server.v1_7_R3.PacketPlayOutChat;
@@ -11,6 +14,7 @@ import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 public class JsonMessage {
 
@@ -112,9 +116,26 @@ public class JsonMessage {
 			return this;
 		}
 
+		//Lore and Name
+		if(item.hasItemMeta()){
+			item = item.clone();
+			ItemMeta meta = item.getItemMeta();
+			
+			if(meta.hasDisplayName())
+				meta.setDisplayName(meta.getDisplayName().replaceAll(",", ";"));
+			
+			if(meta.hasLore()){
+				List<String> lore = new ArrayList<String>();
+				for(String line : meta.getLore())
+					lore.add(line.replaceAll(",", ";"));
+				meta.setLore(lore);
+			}
+			item.setItemMeta(meta);
+		}
+
 		net.minecraft.server.v1_7_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound root = nmsItem.save(new NBTTagCompound());
-
+		
 		this.temp = this.temp + (",\"hoverEvent\":{\"action\":\"show_item\",\"value\":\"" + (root.toString()).replace("\"", "") + "\"}");
 		return this;
 	}
@@ -298,4 +319,30 @@ public class JsonMessage {
 			return json;
 		}
 	}
+
+	// Get last chat color
+	public static ChatColor getLastColors(String input) {
+        ChatColor result = null;
+        int length = input.length();
+
+        // Search backwards from the end as it is faster
+        for (int index = length - 1; index > -1; index--) {
+            char section = input.charAt(index);
+            if (section == ChatColor.COLOR_CHAR && index < length - 1) {
+                char c = input.charAt(index + 1);
+                ChatColor color = ChatColor.getByChar(c);
+
+                if (color != null) {
+                    result = color;
+
+                    // Once we find a color or reset we can stop searching
+                    if (color.isColor() || color.equals(ChatColor.RESET)) {
+                        break;
+                    }
+                }
+            }
+        }
+
+        return result;
+    }
 }

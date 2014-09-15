@@ -117,8 +117,8 @@ public class PlayerListener implements Listener{
 		json.replace("%position%").text(ChatColor.GRAY + "[" + ChatColor.GOLD + "position" + ChatColor.GRAY + "]" + ChatColor.WHITE).hover(ChatColor.BLUE + name + " en [" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + "]").then();
 		if(json.contain("%item%")){
 			ItemStack item 		= player.getItemInHand();
-			String item_name 	= ChatColor.stripColor(item.getItemMeta() != null ? item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name().toLowerCase() : item.getType().name().toLowerCase()).replace("_", " " + ChatColor.GOLD);
-			json.replace("%item%").text(ChatColor.GRAY + "[" + ChatColor.GOLD + item_name + ChatColor.GRAY + "]").tooltip(item).then();
+			String item_name 	= (item.getItemMeta() != null ? item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name().toLowerCase() : item.getType().name().toLowerCase());
+			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(JsonMessage.getLastColors(item_name)).tooltip(item).then();
 		}
 
 		//Close and Send

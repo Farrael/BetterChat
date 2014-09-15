@@ -322,7 +322,7 @@ public class JsonMessage {
 
 	// Get last chat color
 	public static ChatColor getLastColors(String input) {
-        ChatColor result = null;
+        ChatColor result = ChatColor.GRAY;
         int length = input.length();
 
         // Search backwards from the end as it is faster

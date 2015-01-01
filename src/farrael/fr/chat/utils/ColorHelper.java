@@ -9,13 +9,16 @@ public class ColorHelper {
 	 * @param altColorChar - Color symbole
 	 * @param string - String to parse
 	 */
-	public static ChatColor getColorFromString(char altColorChar, String string) {
+	public static ChatColor getColorFromString(char altColorChar, String string, boolean reverse) {
 		ChatColor result = ChatColor.WHITE;
 		char[] b = string.toCharArray();
 		int length = b.length;
 
 		ChatColor color = null;
-		for (int i = 0; i < (length - 1); i++) {
+		int min = reverse ? (length - 1) : 0;
+		int max = reverse ? 0 : (length - 1);
+		int hit = reverse ? -1 : 1;
+		for (int i = min; i != max; i += hit) {
 			if (b[i] == altColorChar && "0123456789AaBbCcDdEeFfKkLlMmNnOoRr".indexOf(b[i+1]) > -1) {				
 				color = ChatColor.getByChar(b[i+1]);
 				if (color != null) {

@@ -228,7 +228,8 @@ public class JsonPart {
 		Set<JsonPart> result = new LinkedHashSet<JsonPart>();
 
 		int index; String before, after;
-		ChatColor color = null;
+		ChatColor color = this.color;
+		JsonPart json;
 		ArrayList<ChatColor> format = new ArrayList<ChatColor>();
 		while((index = text.indexOf(Character.toString(ChatColor.COLOR_CHAR))) != -1) {
 			before = text.substring(0, index);
@@ -240,7 +241,9 @@ public class JsonPart {
 				continue;
 			}
 
-			result.add(new JsonPart(before).color(color).format(format).addToString(this.string));
+			json = new JsonPart(before);
+			if(json.isValid())
+				result.add(json.color(color).format(format).addToString(this.string));
 
 			if(c.equals(ChatColor.RESET)) {
 				color = null;
@@ -264,6 +267,20 @@ public class JsonPart {
 	 */
 	public String getText() {
 		return "{\"text\":\"" + this.text + "\"" + this.string + (this.color != null ? (",\"color\":\"" + color.name().toLowerCase() + "\"") : "")  + "}";
+	}
+
+	/**
+	 * Return the color used
+	 */
+	public ChatColor getColor() {
+		return this.color;
+	}
+
+	/**
+	 * Return the format used
+	 */
+	public List<ChatColor> getFormat() {
+		return this.style;
 	}
 
 	/**

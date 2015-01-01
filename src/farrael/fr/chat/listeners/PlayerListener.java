@@ -118,7 +118,7 @@ public class PlayerListener implements Listener{
 		if(json.contains("%item%")){
 			ItemStack item 		= player.getItemInHand();
 			String item_name 	= (item.getItemMeta() != null ? item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name().toLowerCase() : item.getType().name().toLowerCase());
-			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(ColorHelper.getColorFromString(ChatColor.COLOR_CHAR, item_name)).tooltip(item);
+			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(ColorHelper.getColorFromString(ChatColor.COLOR_CHAR, item_name, false)).tooltip(item);
 		}
 
 		return json.finish();

@@ -151,9 +151,13 @@ public class JsonMessage {
 		this.apply();
 
 		List<JsonPart> result = new LinkedList<JsonPart>();
-		for(JsonPart part : this.part)
+		JsonPart last = null;
+		for(JsonPart part : this.part) { 
+			if(last != null)
+				part.copyColor(last);
 			result.addAll(part.translateColorCode(symbole));
-
+			last = result.get(result.size() - 1);
+		}
 		this.part = result;
 		this.actual_part = (result.size() - 1);
 		return this;

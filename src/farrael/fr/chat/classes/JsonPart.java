@@ -75,37 +75,52 @@ public class JsonPart {
 		if(color == null)
 			return this;
 
-		String value 	= "";
-		boolean isColor = false;
-		switch(color){
-		case STRIKETHROUGH:
-			value = (",\"strikethrough\":true");
-			break;
-		case BOLD:
-			value = (",\"bold\":true");
-			break;
-		case UNDERLINE:
-			value = (",\"underlined\":true");
-			break;
-		case ITALIC:
-			value = (",\"italic\":true");
-			break;
-		case MAGIC:
-			value = (",\"obfuscated\":true");
-			break;
-		default:
-			isColor = true;
-			break;
-		}
-
-		if(isColor)
-			this.color = color;
-		else {
-			this.style.add(color);
-			this.string += value;
+		if(color.equals(ChatColor.RESET)){
+			this.color = null;
+			this.style.clear();
+		} else {
+			if(color.isColor())
+				this.color = color;
+			else {
+				this.style.add(color);
+			}
 		}
 
 		return this;
+	}
+
+	/**
+	 * Return json string who represents colors
+	 */
+	private String colorize() {
+		String value = "";
+
+		if(this.color != null)
+			value += ",\"color\":\"" + color.name().toLowerCase() + "\"";
+
+		for(ChatColor color : this.style) {
+			switch(color){
+			case STRIKETHROUGH:
+				value += (",\"strikethrough\":true");
+				break;
+			case BOLD:
+				value += (",\"bold\":true");
+				break;
+			case UNDERLINE:
+				value += (",\"underlined\":true");
+				break;
+			case ITALIC:
+				value += (",\"italic\":true");
+				break;
+			case MAGIC:
+				value += (",\"obfuscated\":true");
+				break;
+			default:
+				break;
+			}
+		}
+
+		return value;	
 	}
 
 	/**
@@ -266,7 +281,7 @@ public class JsonPart {
 	 * Return written text with/without parsing
 	 */
 	public String getText() {
-		return "{\"text\":\"" + this.text + "\"" + this.string + (this.color != null ? (",\"color\":\"" + color.name().toLowerCase() + "\"") : "")  + "}";
+		return "{\"text\":\"" + this.text + "\"" + this.string + this.colorize() + "}";
 	}
 
 	/**

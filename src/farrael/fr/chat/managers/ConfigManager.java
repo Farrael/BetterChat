@@ -12,9 +12,9 @@ public class ConfigManager {
 	private boolean			debug			= false;
 	private FileManager 	fileManager		= null;
 	private Chat 			plugin			= null;
-	
+
 	public static String 	permission 		= ChatColor.RED + "Vous n'avez pas la permission pour effectuer cela.";
-	
+
 	public ConfigManager(Chat plugin, FileManager fileManager){
 		this.plugin 		= plugin;
 		this.fileManager 	= fileManager;
@@ -52,11 +52,11 @@ public class ConfigManager {
 	private void loadType(FileType type, boolean reload){
 		long startTime = System.currentTimeMillis();
 		switch(type){
-			case CONFIG:
-				this.loadConfig(type);
-				break;
-			default:
-				break;
+		case CONFIG:
+			this.loadConfig(type);
+			break;
+		default:
+			break;
 		}
 		long endTime = System.currentTimeMillis();
 		debug("Loading " + type.toString().toLowerCase() + " took " + (endTime-startTime) + "ms.");
@@ -93,42 +93,42 @@ public class ConfigManager {
 		this.fileManager.setComment(type, "join-display", false, "Affiche un message lors de la connexion.");
 		this.plugin.join_message 			= (String) this.fileManager.getData(type, "join-message", "%player% vient de se connecter.");
 		this.fileManager.setComment(type, "join-message", true, "Message lors de la connexion.");
-		
+
 		this.plugin.leave_display			= (boolean) this.fileManager.getData(type, "leave-display", false);
 		this.fileManager.setComment(type, "leave-display", true, "Affiche un message lors de la deconnexion.");
 		this.plugin.leave_message			= (String) this.fileManager.getData(type, "leave-message", "%player% vient de se deconnecter.");
 		this.fileManager.setComment(type, "leave-message", true, "Message lors de la deconnexion.");
-		
+
 		this.plugin.first_message_display	= (boolean) this.fileManager.getData(type, "first-message-display", false);
 		this.fileManager.setComment(type, "first-message-display", true, "Affiche un message lors de la de la premiere connexion.");
 		this.plugin.first_message_broadcast	= (String) this.fileManager.getData(type, "first-message-broadcast", "Bienvenue a %player% sur le serveur.");
 		this.fileManager.setComment(type, "first-message-broadcast", true, "Message lors de la premiere connexion ( server ).");
 		this.plugin.first_message_player	= (String) this.fileManager.getData(type, "first-message-player", "Bienvenue %player% sur le serveur %server%.");
 		this.fileManager.setComment(type, "first-message-player", true, "Message lors de la premiere connexion ( player only ).");
-		
+
 		this.plugin.chat_format	= (String) this.fileManager.getData(type, "chat-format", "%player% &f: %message%");
-		this.fileManager.setComment(type, "chat-format", true, "Message lors de la premiere connection ( player only ).");
-		
+		this.fileManager.setComment(type, "chat-format", true, "Format des messages dans le chat.");
+
 		this.plugin.player_color			= (boolean) this.fileManager.getData(type, "player-color", true);
 		this.fileManager.setComment(type, "player-color", true, "Change le display name avec la couleur du prefix.");
-		
+
 		this.plugin.console_chat			= (boolean) this.fileManager.getData(type, "console-chat", true);
 		this.fileManager.setComment(type, "console-chat", true, "Affiche les message dans la console.");
-				
+
 		this.plugin.player_tab				= (boolean) this.fileManager.getData(type, "player-tab", true);
 		this.fileManager.setComment(type, "player-tab", true, "Modifie la couleur d'un joueur dans le menu tabulation.");
-		
+
 		this.plugin.player_click			= (boolean) this.fileManager.getData(type, "player-click", true);
 		this.fileManager.setComment(type, "player-click", true, "Active le wisph lors du clique sur le nom d\'un joueur.");
-		
+
 		this.plugin.player_hover			= (boolean) this.fileManager.getData(type, "player-hover", true);
 		this.fileManager.setComment(type, "player-hover", true, "Affiche un message lors du survole du nom d\'un joueur.");
 		this.plugin.player_hover_text		= (String) this.fileManager.getData(type, "player-hover-message", "&9%time%");
 		this.fileManager.setComment(type, "player-hover-message", true, "Message lors du survole du nom d\'un joueur.");
-		
+
 		this.plugin.enable				= (boolean) this.fileManager.getData(type, "enable", true);
 		this.fileManager.setComment(type, "enable", true, "Active ou desactive le plugin.");
-		
+
 		this.debug 						= (boolean) this.fileManager.getData(type, "console-Debug", false);
 		this.fileManager.setComment(type, "console-Debug", true, "Display debug message in the console.");
 	}

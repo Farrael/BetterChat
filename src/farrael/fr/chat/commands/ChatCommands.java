@@ -15,7 +15,7 @@ public class ChatCommands implements CommandExecutor {
 	public ChatCommands(Chat scrap){
 		plugin = scrap;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(!(sender instanceof Player)) {
@@ -28,14 +28,14 @@ public class ChatCommands implements CommandExecutor {
 			player.sendMessage(ConfigManager.permission);
 			return true;
 		}
-		
+
 		if(args.length < 1){
 			player.sendMessage(ChatColor.BLUE + "Tapez /chat help pour les informations sur les commandes.");
 			return true;
 		}
 
 		String arg = args[0].toString();
-		
+
 		if(arg.equalsIgnoreCase("help")){			
 			player.sendMessage(ChatColor.BLUE + "Help [1/1]");
 			player.sendMessage(ChatColor.BLUE + "/chat reload : Reload la configuration.");
@@ -49,13 +49,13 @@ public class ChatCommands implements CommandExecutor {
 			player.sendMessage(ChatColor.BLUE + "Config reloaded.");
 			return false;
 		}
-		
+
 		if(arg.equalsIgnoreCase("on") || arg.equalsIgnoreCase("off")){
 			Boolean bol = false;
 			if(arg.equalsIgnoreCase("on")){
 				bol = true;
 			}
-			
+
 			plugin.enable = bol;
 			plugin.fileManager.setData(FileType.CONFIG, "enable", bol);
 			player.sendMessage(ChatColor.BLUE + "[" + ChatColor.YELLOW + plugin.getName() + ChatColor.BLUE + "] Vous venez " + (bol ? "d'activer" : "de désactiver") + " le plugin.");

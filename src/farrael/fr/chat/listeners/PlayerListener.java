@@ -1,6 +1,8 @@
 package farrael.fr.chat.listeners;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
@@ -21,30 +23,38 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import farrael.fr.chat.Chat;
 import farrael.fr.chat.classes.JsonMessage;
+import farrael.fr.chat.utils.ColorHelper;
 
 public class PlayerListener implements Listener{
 	Chat chat = Chat.instance;
 
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
 		if(!chat.enable) return;
 
 		setChatName(event.getPlayer());
 
-		if(!event.getPlayer().hasPlayedBefore()){
-			if(!chat.first_message_display) return;
-			event.setJoinMessage(parseMessage(chat.first_message_broadcast, event.getPlayer()));
-			event.getPlayer().sendMessage(parseMessage(chat.first_message_player, event.getPlayer()));
+		event.setJoinMessage("");
+		if(!event.getPlayer().hasPlayedBefore() && chat.first_message_display){
+			List<Player> c =  Arrays.asList(Bukkit.getOnlinePlayers());
+			c.remove(event.getPlayer());
+
+			createJsonMessage(chat.join_message, "", event.getPlayer()).sendToList(c);
+			createJsonMessage(chat.first_message_player, "", event.getPlayer()).send(event.getPlayer());
 		} else {
 			if(!chat.join_display) return;
-			event.setJoinMessage(parseMessage(chat.join_message, event.getPlayer()));
+			createJsonMessage(chat.join_message, "", event.getPlayer()).sendToAll();
 		}
 	}
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event){
-		if(!chat.enable || !chat.leave_display) return;
-		event.setQuitMessage(parseMessage(chat.leave_message, event.getPlayer()));
+		if(!chat.enable) return;
+
+		event.setQuitMessage("");
+		if(chat.leave_display)
+			createJsonMessage(chat.leave_message, "", event.getPlayer()).sendToAll();
 	}
 
 	@EventHandler
@@ -52,7 +62,11 @@ public class PlayerListener implements Listener{
 		if(!chat.enable) return;
 
 		event.setCancelled(true);
-		sendChatMessage(chat.chat_format, event.getMessage(), event.getPlayer());
+		createJsonMessage(chat.chat_format, event.getMessage(), event.getPlayer()).sendToAll();
+
+		//Send Consol Message
+		if(chat.console_chat)
+			Bukkit.getConsoleSender().sendMessage(getDisplayName(event.getPlayer(), chat.player_color) + " : " + event.getMessage());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -73,20 +87,7 @@ public class PlayerListener implements Listener{
 		}, 5L);
 	}
 
-	public String parseMessage(String message, Player player){
-		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
-
-		message = message.replaceAll("%player%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
-		message = message.replaceAll("%playername%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
-		message = message.replaceAll("%server%", Bukkit.getServerName());
-		message = message.replaceAll("%suffix%", player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "");
-		message = message.replaceAll("%prefix%", player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "");
-		message = message.replaceAll("%color%" , player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "");
-		message = message.replaceAll("%time%"  , date);
-		return ChatColor.translateAlternateColorCodes('&', message);
-	}
-
-	public void sendChatMessage(String format, String message, Player player){
+	public JsonMessage createJsonMessage(String format, String message, Player player){
 		String name = player.getName();
 		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
 		Location l  = player.getLocation();
@@ -96,17 +97,15 @@ public class PlayerListener implements Listener{
 
 		// Format player
 		json.replace("%player%").text(getDisplayName(player, chat.player_color));
-		if(chat.player_hover) json.hover(chat.player_hover_text);
-		if(chat.player_click) json.click().chatSuggestion("/w " + name + " ").close();
-		json.then();
+		if(chat.player_hover) json.getPart().hover(chat.player_hover_text);
+		if(chat.player_click) json.getPart().click().chatSuggestion("/w " + name + " ").close();
 
 		// Format variable
-		json.replace("%server%").text(chat.getServer().getName()).then();
-		json.replace("%suffix%").text(player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "").then();
-		json.replace("%prefix%").text(player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "").then();
-		json.replace("%color%").text(player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "").then();
+		json.replaceInText("%server%", chat.getServer().getName());
+		json.replaceInText("%suffix%", player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "");
+		json.replaceInText("%prefix%", player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "");
+		json.replaceInText("%color%" , player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "");
 		json.replaceInText("%playername%", player.getDisplayName() != null ? player.getDisplayName() : player.getName());
-		json.replaceInText("%time%", date).then();
 
 		if(player.hasPermission("chat.color"))
 			json.replaceInText("%message%", message).translateColorCode('&');
@@ -114,19 +113,15 @@ public class PlayerListener implements Listener{
 			json.translateColorCode('&').replaceInText("%message%", message);
 
 		//Message format
-		json.replace("%position%").text(ChatColor.GRAY + "[" + ChatColor.GOLD + "position" + ChatColor.GRAY + "]" + ChatColor.WHITE).hover(ChatColor.BLUE + name + " en [" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + "]").then();
-		if(json.contain("%item%")){
+		json.replaceInText("%time%", date);
+		json.replace("%position%").text(ChatColor.GRAY + "[" + ChatColor.GOLD + "position" + ChatColor.GRAY + "]" + ChatColor.WHITE).hover(ChatColor.BLUE + name + " en [" + l.getBlockX() + ", " + l.getBlockY() + ", " + l.getBlockZ() + "]");
+		if(json.contains("%item%")){
 			ItemStack item 		= player.getItemInHand();
 			String item_name 	= (item.getItemMeta() != null ? item.getItemMeta().hasDisplayName() ? item.getItemMeta().getDisplayName() : item.getType().name().toLowerCase() : item.getType().name().toLowerCase());
-			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(JsonMessage.getLastColors(item_name)).tooltip(item).then();
+			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(ColorHelper.getColorFromString(ChatColor.COLOR_CHAR, item_name)).tooltip(item);
 		}
 
-		//Close and Send
-		json.finish().sendToAll();
-		
-		//Send Consol Message
-		if(chat.console_chat)
-			Bukkit.getConsoleSender().sendMessage(getDisplayName(player, chat.player_color) + " : " + message);
+		return json.finish();
 	}
 
 	public static void setChatName(Player player){
@@ -179,7 +174,7 @@ public class PlayerListener implements Listener{
 	public static String nonNull(String value){
 		return value != null ? value : "";
 	}
-	
+
 	public static String getDisplayName(Player player, boolean color){
 		return (color ? (player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "") : "") + player.getDisplayName() != null ? player.getDisplayName() : player.getName();
 	}

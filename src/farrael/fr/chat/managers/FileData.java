@@ -27,13 +27,13 @@ public class FileData {
 	private FileConfiguration conf 	= null;
 
 	private int comments = 0;
-	
+
 	private boolean isFolder = false;
 
 	public FileData(String name, String path){
 		this.name = name;
 		this.path = path;
-		
+
 		if(new File(path, name).exists()){
 			if(!name.contains("."))
 				this.isFolder = true;
@@ -48,7 +48,7 @@ public class FileData {
 			}
 			this.file = Create;
 		}
-		
+
 		if(!this.isFolder){
 			this.conf = new YamlConfiguration();
 			try {
@@ -58,11 +58,11 @@ public class FileData {
 			}
 		}
 	}
-	
+
 	public FileData(File file){
 		this.name = file.getName();
 		this.path = file.getPath();
-		
+
 		if(file.exists()){
 			if(!name.contains("."))
 				this.isFolder = true;
@@ -76,7 +76,7 @@ public class FileData {
 			}
 			this.file = file;
 		}
-		
+
 		if(!this.isFolder){
 			this.conf = new YamlConfiguration();
 			try {
@@ -106,26 +106,26 @@ public class FileData {
 	public boolean isComments(){
 		return this.comments > 0;
 	}
-	
+
 	public boolean isFolder(){
 		return this.isFolder;
 	}
-	
+
 	public File[] getFiles(final String name){
 		if(!this.isFolder) return new File[]{};
 		FilenameFilter filter = new FilenameFilter(){
-		    public boolean accept(File file, String fileName) {
-		        return fileName.contains(name);
-		    }
+			public boolean accept(File file, String fileName) {
+				return fileName.contains(name);
+			}
 		};
 		return this.file.listFiles(filter);
 	}
-	
+
 	public File[] getFiles(){
 		if(!this.isFolder) return new File[]{};
 		return this.file.listFiles();
 	}
-	
+
 	public Set<FileData> getFilesData(String name){
 		if(!this.isFolder) return new HashSet<FileData>();
 		File[] file_list;
@@ -133,18 +133,18 @@ public class FileData {
 			file_list = this.getFiles(name);
 		else
 			file_list = this.getFiles();
-		
+
 		Set<FileData> file_data = new HashSet<FileData>();
 		for(File file : file_list){
 			file_data.add(new FileData(file));
 		}
 		return file_data;
 	}
-	
+
 	public Set<FileData> getFilesData(){
 		return this.getFilesData(null);
 	}
-	
+
 	public ConfigurationSection getSection(String path){
 		if(this.getConf().isConfigurationSection(path))
 			return this.getConf().getConfigurationSection(path);
@@ -168,10 +168,10 @@ public class FileData {
 				path_comment += list[i] + ".";
 			}
 		}
-		
+
 		if(this.conf.contains(path_comment + "_COMMENT_" + this.comments))
 			this.conf.set(path_comment + "_COMMENT_" + this.comments, null);
-		
+
 		if(line)
 			values[0] = values[0] + "{/}";
 
@@ -246,14 +246,14 @@ public class FileData {
 				e.printStackTrace();
 				return false;
 			}
-    	} else {
+		} else {
 			try {
 				this.saveConfig();
 			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
-    	}
+		}
 		return true;
 	}
 
@@ -278,7 +278,7 @@ public class FileData {
 				}
 			}
 			reader.close();
-			
+
 			return builder.toString();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -297,7 +297,7 @@ public class FileData {
 			if(line.contains("_COMMENT_")) {
 				String comment = line.replaceFirst("_COMMENT_", "#");
 				comment = comment.replace(comment.substring(comment.indexOf("#") + 1, comment.indexOf(":") + 1), "");
-				
+
 				if(comment.contains("# +-")) {
 					if(headerLine == 0) {
 						config.append(comment + "\n");
@@ -328,18 +328,18 @@ public class FileData {
 		}
 		return config.toString();
 	}
-	
+
 	private void saveConfig() {
-        String configuration = this.getConfigStream();
- 
-        try {
-            Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8"));
-            writer.write(configuration);
-            writer.flush();
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
- 
-    }
+		String configuration = this.getConfigStream();
+
+		try {
+			Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.file), "UTF-8"));
+			writer.write(configuration);
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 }

@@ -1,202 +1,161 @@
 package farrael.fr.chat.classes;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
-import net.minecraft.server.v1_7_R3.ChatSerializer;
-import net.minecraft.server.v1_7_R3.NBTTagCompound;
-import net.minecraft.server.v1_7_R3.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R1.ChatSerializer;
+import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_7_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_7_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 public class JsonMessage {
 
-	private String  text;
-	private String 	replace;
-	private String 	temp = "";
-	private boolean closed;
+	private String		string 	= "";
+	private boolean 	closed 	= false;
+
+	private String 		replace;
+	private JsonPart 	replace_temp;
+
+	private List<JsonPart> part = new LinkedList<JsonPart>();
+	private int actual_part 	= -1;
 
 	/**
 	 * Create empty JsonMessage
 	 */
-	public JsonMessage(){
-		this.text   = "{\"text\":\"" + "" + "\"" + ",\"extra\":[";
-		this.closed = false;
-	}
+	public JsonMessage(){}
 
 	/**
-	 * Create JsonMessage with default text
-	 * @param string - default text
+	 * Create formatted JsonMessage
 	 */
-	public JsonMessage(String string){
-		this.text   = "{\"text\":\"" + "" + "\"" + ",\"extra\":[" + "{\"text\":\"" + string + "\"}";
-		this.closed = false;
+	public JsonMessage(String format){
+		this.text(format);
 	}
 
 	/**
-	 * Write string
-	 * @param message - string to write
+	 * Create texte node
+	 * @param message
 	 */
-	public JsonMessage text(String message) {
-		this.temp = this.temp + (",{\"text\":\"" + message + "\"");
-		return this;
+	public JsonPart text(String message) {
+		this.apply();
+		this.actual_part++;
+		this.part.add(new JsonPart(message));
+		if(this.actual_part > 0)
+			this.part.get(actual_part).copyColor(this.part.get(actual_part - 1));
+
+		return this.getPart();
 	}
 
 	/**
-	 * Create hover event
-	 * @param message - message to display
+	 * Return actual texte node
 	 */
-	public JsonMessage hover(String message) {
-		this.temp = this.temp + (",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"" + message + "\"}");
-		return this;
+	public JsonPart getPart() {
+		return this.isReplacement() ? this.replace_temp : this.part.get(actual_part);
 	}
 
 	/**
-	 * Create click event
-	 * @return clickableText setup
+	 * Return if message contains value
+	 * @param value
 	 */
-	public clickableText click() {
-		return new clickableText(this);
+	public boolean contains(String value){
+		for(JsonPart part : this.part)
+			if(part.contains(value))
+				return true;
+		return false;
 	}
 
 	/**
-	 * Add display color to text
-	 * @param color - color to display
-	 */
-	public JsonMessage color(ChatColor color){
-		String value = "";
-		switch(color){
-		case STRIKETHROUGH:
-			value = (",\"strikethrough\":true");
-			break;
-		case BOLD:
-			value = (",\"bold\":true");
-			break;
-		case UNDERLINE:
-			value = (",\"underlined\":true");
-			break;
-		case ITALIC:
-			value = (",\"italic\":true");
-			break;
-		case MAGIC:
-			value = (",\"obfuscated\":true");
-			break;
-		default:
-			value = (",\"color\":\"" + color.name().toLowerCase() + "\"");
-			break;
-		}
-		this.temp = this.temp + value;
-		return this;
-	}
-
-	/**
-	 * Translate given string (cf minecraft)
-	 * @param value - value to translate
+	 * Return message to string
 	 * @return
 	 */
-	public JsonMessage translate(String value){
-		this.temp = this.temp + (",{\"translate\":" + value);
-		return this;
+	public String getText(){
+		this.apply();
+
+		String string = "";
+		for(JsonPart part : this.part)
+			string += part.getText() + ",";
+
+		if(this.part.size() > 0)
+			string = string.substring(0, string.length() - 1);
+
+		return "{\"text\":\"\"" + ",\"extra\":[" + string + "]}";
 	}
 
 	/**
-	 * Create item event
-	 * @param item - item informations to display
+	 * Return if message finished
 	 */
-	public JsonMessage tooltip(ItemStack item){
-		if(item == null || item.getType() == Material.AIR){
-			this.temp = "";
-			return this;
-		}
-
-		//Lore and Name
-		if(item.hasItemMeta()){
-			item = item.clone();
-			ItemMeta meta = item.getItemMeta();
-			
-			if(meta.hasDisplayName())
-				meta.setDisplayName(meta.getDisplayName().replaceAll(",", ";"));
-			
-			if(meta.hasLore()){
-				List<String> lore = new ArrayList<String>();
-				for(String line : meta.getLore())
-					lore.add(line.replaceAll(",", ";"));
-				meta.setLore(lore);
-			}
-			item.setItemMeta(meta);
-		}
-
-		net.minecraft.server.v1_7_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
-		NBTTagCompound root = nmsItem.save(new NBTTagCompound());
-		
-		this.temp = this.temp + (",\"hoverEvent\":{\"action\":\"show_item\",\"value\":\"" + (root.toString()).replace("\"", "") + "\"}");
-		return this;
+	public boolean isValid() {
+		return this.closed;
 	}
 
 	/**
-	 * Seperate texte without write it (use for replace)
+	 * Return if replacement enabled
 	 */
-	public JsonMessage seperate(){
-		if(this.temp != "")
-			this.temp = this.temp + "}";
-		return this;
-	}
-
-	/**
-	 * Close the text
-	 */
-	public JsonMessage then(){
-		if(this.temp != ""){
-			this.temp = this.temp + "}";
-			if(this.replace != null){
-				this.text = this.text.replaceAll(this.replace, "\"}" + this.temp + ",{\"text\":\"");
-				this.replace = null;
-			} else
-				this.text = this.text + this.temp;
-			this.closed = false;
-			this.temp 	= "";
-		}
-		return this;
-	}
-
-	/**
-	 * Contain string in text
-	 * @param value - Value to search for
-	 */
-	public boolean contain(String value){
-		return this.text.contains(value);
+	public boolean isReplacement() {
+		return this.replace != null;
 	}
 
 	/**
 	 * Replace in text with event
 	 * @param regex - String to replace
 	 */
-	public JsonMessage replace(String regex){
+	public JsonPart replace(String regex){
+		this.apply();
+
 		this.replace = regex;
-		return this;
+		return this.replace_temp = new JsonPart();
 	}
 
 	/**
 	 * Replace cible by source in text
 	 */
 	public JsonMessage replaceInText(String regex, String replacement){
-		this.text = this.text.replaceAll(regex, replacement);
+		for(int i = 0; i < this.part.size(); i++)
+			this.part.get(i).replaceInText(regex, replacement);
+
 		return this;
 	}
 
 	/**
-	 * Translate color for all text already written with then()
+	 * Apply replacement
 	 */
-	public JsonMessage translateColorCode(char symbole){
-		this.text = this.text.replace("$", "\f00");
-		this.text = ChatColor.translateAlternateColorCodes(symbole, this.text).replace("\f00", "$");
+	public JsonMessage apply() {
+		if(this.isReplacement() && this.replace_temp.isValid()) {
+			List<JsonPart> result = new LinkedList<JsonPart>();
+			for(int i = 0; i < this.part.size(); i++) {
+				if(this.part.get(i).contains(this.replace)) {
+					Set<JsonPart> parts = this.part.get(i).replaceWithPart(this.replace, this.replace_temp);
+					for(JsonPart part : parts)
+						if(part.isValid())
+							result.add(part);
+				} else
+					result.add(this.part.get(i));
+			}
+
+			this.part = result;
+			this.actual_part = (result.size() - 1);
+		}
+
+		this.replace 		= null;
+		this.replace_temp 	= null;
+		return this;
+	}
+
+	/**
+	 * Translate symbole to color code
+	 * @param symbole
+	 */
+	public JsonMessage translateColorCode(char symbole) {
+		this.apply();
+
+		List<JsonPart> result = new LinkedList<JsonPart>();
+		for(JsonPart part : this.part)
+			result.addAll(part.translateColorCode(symbole));
+
+		this.part = result;
+		this.actual_part = (result.size() - 1);
 		return this;
 	}
 
@@ -204,11 +163,10 @@ public class JsonMessage {
 	 * Close the JsonMessage
 	 */
 	public JsonMessage finish() {
-		if(!this.temp.equals(""))
-			this.then();
+		this.apply();
 
-		this.text = text + "]}";
 		this.closed = true;
+		this.string = this.getText();
 		return this;
 	}
 
@@ -216,16 +174,9 @@ public class JsonMessage {
 	 * Return the JsonMessage packet to send
 	 */
 	public PacketPlayOutChat getPacket(){
-		if(!this.closed)
+		if(!this.isValid())
 			this.finish();
-		return new PacketPlayOutChat(ChatSerializer.a(this.text));
-	}
-
-	/**
-	 * Return written text
-	 */
-	public String getText(){
-		return this.text;
+		return new PacketPlayOutChat(ChatSerializer.a(this.string));
 	}
 
 	/**
@@ -240,7 +191,7 @@ public class JsonMessage {
 	 * Send to a list of players
 	 * @param players - list of players to send
 	 */
-	public void sendToList(Player[] players){
+	public void sendToList(List<Player> players){
 		for (Player p: players)
 			this.send(p);
 	}
@@ -248,101 +199,9 @@ public class JsonMessage {
 	/**
 	 * Send to all players
 	 */
+	@SuppressWarnings("deprecation")
 	public void sendToAll(){
 		for (Player p: Bukkit.getOnlinePlayers())
 			this.send(p);
 	}
-
-	////////////////////////////////////////////////////////////
-	//                Clickable Text Writter                  //
-	////////////////////////////////////////////////////////////
-	public class clickableText{
-		private JsonMessage json;
-		private String		text;
-
-		public clickableText(JsonMessage instance){
-			this.json = instance;
-			this.text = ",\"clickEvent\":";
-		}
-
-		/**
-		 * Open a link on click
-		 * @param url - url to open
-		 */
-		public clickableText openlink(String url){
-			this.text = this.text + "{\"action\":\"open_url\",\"value\":\"" + url + "\"}";
-			return this;
-		}
-
-		/**
-		 * Run command on click
-		 * @param command - command to run
-		 */
-		public clickableText runCommand(String command){
-			this.text = this.text + "{\"action\":\"run_command\",\"value\":\"" + command + "\"}";
-			return this;
-		}
-
-		/**
-		 * Write string in chat on click
-		 * @param chat - string to write in chat
-		 * @return
-		 */
-		public clickableText chatSuggestion(String chat){
-			this.text = this.text + "{\"action\":\"suggest_command\",\"value\":\"" + chat + "\"}";
-			return this;
-		}
-
-		/**
-		 * Open a file on click
-		 * @param file - file to open
-		 */
-		public clickableText openFile(String file){
-			this.text = this.text + "{\"action\":\"open_file\",\"value\":\"" + file + "\"}";
-			return this;
-		}
-
-		/**
-		 * Separator for multiple actions
-		 */
-		public clickableText then(){
-			this.text = this.text + ",";
-			return this;
-		}
-
-		/**
-		 * Close the click event
-		 * @return
-		 */
-		public JsonMessage close(){
-			this.json.temp = this.json.temp + this.text;
-			return json;
-		}
-	}
-
-	// Get last chat color
-	public static ChatColor getLastColors(String input) {
-        ChatColor result = ChatColor.GRAY;
-        int length = input.length();
-
-        // Search backwards from the end as it is faster
-        for (int index = length - 1; index > -1; index--) {
-            char section = input.charAt(index);
-            if (section == ChatColor.COLOR_CHAR && index < length - 1) {
-                char c = input.charAt(index + 1);
-                ChatColor color = ChatColor.getByChar(c);
-
-                if (color != null) {
-                    result = color;
-
-                    // Once we find a color or reset we can stop searching
-                    if (color.isColor() || color.equals(ChatColor.RESET)) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return result;
-    }
 }

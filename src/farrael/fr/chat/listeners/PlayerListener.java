@@ -23,6 +23,7 @@ import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import farrael.fr.chat.Chat;
 import farrael.fr.chat.classes.JsonMessage;
+import farrael.fr.chat.storage.Configuration;
 import farrael.fr.chat.utils.ColorHelper;
 
 public class PlayerListener implements Listener{
@@ -31,42 +32,42 @@ public class PlayerListener implements Listener{
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
-		if(!chat.enable) return;
+		if(!Configuration.ENABLE) return;
 
 		setChatName(event.getPlayer());
 
 		event.setJoinMessage("");
-		if(!event.getPlayer().hasPlayedBefore() && chat.first_message_display){
+		if(!event.getPlayer().hasPlayedBefore() && Configuration.FIRST_MESSAGE_DISPLAY){
 			List<Player> c =  Arrays.asList(Bukkit.getOnlinePlayers());
 			c.remove(event.getPlayer());
 
-			createJsonMessage(chat.join_message, "", event.getPlayer()).sendToList(c);
-			createJsonMessage(chat.first_message_player, "", event.getPlayer()).send(event.getPlayer());
+			createJsonMessage(Configuration.FIRST_MESSAGE_BROADCAST, "", event.getPlayer()).sendToList(c);
+			createJsonMessage(Configuration.FIRST_MESSAGE_PLAYER, "", event.getPlayer()).send(event.getPlayer());
 		} else {
-			if(!chat.join_display) return;
-			createJsonMessage(chat.join_message, "", event.getPlayer()).sendToAll();
+			if(!Configuration.JOIN_DISPLAY) return;
+			createJsonMessage(Configuration.JOIN_MESSAGE, "", event.getPlayer()).sendToAll();
 		}
 	}
 
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event){
-		if(!chat.enable) return;
+		if(!Configuration.ENABLE) return;
 
 		event.setQuitMessage("");
-		if(chat.leave_display)
-			createJsonMessage(chat.leave_message, "", event.getPlayer()).sendToAll();
+		if(Configuration.LEAVE_DISPLAY)
+			createJsonMessage(Configuration.LEAVE_MESSAGE, "", event.getPlayer()).sendToAll();
 	}
 
 	@EventHandler
 	public void onPlayerSpeak(AsyncPlayerChatEvent event){
-		if(!chat.enable) return;
+		if(!Configuration.ENABLE) return;
 
 		event.setCancelled(true);
-		createJsonMessage(chat.chat_format, event.getMessage(), event.getPlayer()).sendToAll();
+		createJsonMessage(Configuration.CHAT_FORMAT, event.getMessage(), event.getPlayer()).sendToAll();
 
 		//Send Consol Message
-		if(chat.console_chat)
-			Bukkit.getConsoleSender().sendMessage(getDisplayName(event.getPlayer(), chat.player_color) + " : " + event.getMessage());
+		if(Configuration.CONSOLE_CHAT)
+			Bukkit.getConsoleSender().sendMessage(getDisplayName(event.getPlayer(), Configuration.PLAYER_COLOR) + " : " + event.getMessage());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -96,9 +97,9 @@ public class PlayerListener implements Listener{
 		JsonMessage json = new JsonMessage(format);
 
 		// Format player
-		json.replace("%player%").text(getDisplayName(player, chat.player_color));
-		if(chat.player_hover) json.getPart().hover(chat.player_hover_text);
-		if(chat.player_click) json.getPart().click().chatSuggestion("/w " + name + " ").close();
+		json.replace("%player%").text(getDisplayName(player, Configuration.PLAYER_COLOR));
+		if(Configuration.PLAYER_HOVER) json.getPart().hover(Configuration.PLAYER_HOVER_MESSAGE);
+		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion("/w " + name + " ").close();
 
 		// Format variable
 		json.replaceInText("%server%", chat.getServer().getName());

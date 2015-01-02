@@ -20,36 +20,17 @@ import farrael.fr.chat.managers.FileManager.FileType;
 
 public class Chat extends JavaPlugin{
 
-	//-------------/ Variables /-------------//
-	public static Chat 		instance;
-	public static String	label;
+	//-----------/ Static /------------//
+	public static Chat 	instance;
+	public static String 	label;
 
-	public FileManager		fileManager;
+	//-------/ Configurations /--------//
+	public FileManager	fileManager;
 	public ConfigManager	configManager;
 
-	public boolean			enable;
-
-	public boolean			join_display;
-	public String 			join_message;
-
-	public boolean			leave_display;
-	public String 			leave_message;
-
-	public boolean			first_message_display;
-	public String 			first_message_player;
-	public String 			first_message_broadcast;
-
-	public String 			chat_format;
-	public boolean 			player_color;
-	public boolean 			console_chat;
-
-	public boolean			player_tab;
-	public boolean			player_click;
-	public boolean			player_hover;
-	public String			player_hover_text;
-
-	public boolean			useGroupManager;
-	public boolean			usePermissionEx;
+	//---------/ Permissions /---------//
+	public boolean		useGroupManager;
+	public boolean		usePermissionEx;
 	public GroupManager 	groupManager;
 
 	public final Logger 	logger = Bukkit.getServer().getLogger();
@@ -61,7 +42,6 @@ public class Chat extends JavaPlugin{
 		// Create config loader
 		this.fileManager 	= new FileManager(this);
 		this.configManager	= new ConfigManager(this, fileManager);
-		this.enable 		= true;
 
 		// Detecte plugins
 		useGroupManager = Bukkit.getServer().getPluginManager().getPlugin("GroupManager") 	!= null;

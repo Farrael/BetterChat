@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import farrael.fr.chat.Chat;
 import farrael.fr.chat.managers.ConfigManager;
 import farrael.fr.chat.managers.FileManager.FileType;
+import farrael.fr.chat.storage.Configuration;
 
 public class ChatCommands implements CommandExecutor {
 	Chat plugin = Chat.instance;
@@ -38,7 +39,7 @@ public class ChatCommands implements CommandExecutor {
 			if(arg.equalsIgnoreCase("on"))
 				bol = true;
 
-			plugin.enable = bol;
+			Configuration.ENABLE = bol;
 			plugin.fileManager.setData(FileType.CONFIG, "enable", bol);
 			plugin.sendPluginMessage(sender, "Vous venez " + (bol ? "d'activer" : "de désactiver") + " le plugin.", false);
 		

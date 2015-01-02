@@ -11,58 +11,46 @@ import farrael.fr.chat.managers.ConfigManager;
 import farrael.fr.chat.managers.FileManager.FileType;
 
 public class ChatCommands implements CommandExecutor {
-	Chat plugin;
-	public ChatCommands(Chat scrap){
-		plugin = scrap;
-	}
+	Chat plugin = Chat.instance;
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if(!(sender instanceof Player)) {
-			plugin.logger.info("Only Players in game command supported.");
-			return true;
-		}
+		if((sender instanceof Player) && 
+				!plugin.hasPermission((Player)sender, "chat.admin"))
+			return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
 
-		Player player = (Player)sender;
-		if(!plugin.hasPermission(player, "chat.admin")){
-			player.sendMessage(ConfigManager.permission);
-			return true;
-		}
-
-		if(args.length < 1){
-			player.sendMessage(ChatColor.BLUE + "Tapez /chat help pour les informations sur les commandes.");
-			return true;
-		}
+		if(args.length < 1)
+			return plugin.sendPluginMessage(sender, "Tapez /chat help pour les informations sur les commandes.", false);
 
 		String arg = args[0].toString();
-
 		if(arg.equalsIgnoreCase("help")){			
-			player.sendMessage(ChatColor.BLUE + "Help [1/1]");
-			player.sendMessage(ChatColor.BLUE + "/chat reload : Reload la configuration.");
-			player.sendMessage(ChatColor.BLUE + "/chat on/off : Active ou désactive le plugin.");
-			return false;
-		}
+			sender.sendMessage(ChatColor.BLUE + "Chat help [1/1]");
+			sender.sendMessage(ChatColor.BLUE + "/chat reload : Reload la configuration.");
+			sender.sendMessage(ChatColor.BLUE + "/chat on/off : Active ou désactive le plugin.");
 
-		if(arg.equalsIgnoreCase("reload")){			
+		} else if(arg.equalsIgnoreCase("reload")){			
 			plugin.fileManager.getFile(FileType.CONFIG).update();
 			plugin.configManager.reload(FileType.CONFIG, true);
-			player.sendMessage(ChatColor.BLUE + "Config reloaded.");
-			return false;
-		}
+			plugin.sendPluginMessage(sender, "Config reloaded.", false);
 
-		if(arg.equalsIgnoreCase("on") || arg.equalsIgnoreCase("off")){
+		} else if(arg.equalsIgnoreCase("on") || arg.equalsIgnoreCase("off")){
 			Boolean bol = false;
-			if(arg.equalsIgnoreCase("on")){
+			if(arg.equalsIgnoreCase("on"))
 				bol = true;
-			}
 
 			plugin.enable = bol;
 			plugin.fileManager.setData(FileType.CONFIG, "enable", bol);
-			player.sendMessage(ChatColor.BLUE + "[" + ChatColor.YELLOW + plugin.getName() + ChatColor.BLUE + "] Vous venez " + (bol ? "d'activer" : "de désactiver") + " le plugin.");
-			return false;
+			plugin.sendPluginMessage(sender, "Vous venez " + (bol ? "d'activer" : "de désactiver") + " le plugin.", false);
+		
+		} else {
+			sender.sendMessage(ChatColor.GOLD + "•---• " + ChatColor.BLUE + plugin.getName() + ChatColor.GOLD + " •---•");
+			sender.sendMessage("Description : " + plugin.getDescription().getDescription());
+			sender.sendMessage("Version : " + plugin.getDescription().getVersion());
+			sender.sendMessage("=================");
+			sender.sendMessage("Devlopped by Farrael");
 		}
 
-		return false;
+		return true;
 	}
 
 }

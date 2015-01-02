@@ -8,6 +8,7 @@ public class Configuration {
 	public static String 	JOIN_MESSAGE;
 	public static String 	LEAVE_MESSAGE;
 	public static String	PLAYER_HOVER_MESSAGE;
+	public static String	PLAYER_CLICK_MESSAGE;
 	
 	public static String 	FIRST_MESSAGE_PLAYER;
 	public static String 	FIRST_MESSAGE_BROADCAST;

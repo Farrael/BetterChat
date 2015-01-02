@@ -99,7 +99,7 @@ public class PlayerListener implements Listener{
 		// Format player
 		json.replace("%player%").text(getDisplayName(player, Configuration.PLAYER_COLOR));
 		if(Configuration.PLAYER_HOVER) json.getPart().hover(Configuration.PLAYER_HOVER_MESSAGE);
-		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion("/w " + name + " ").close();
+		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion(Configuration.PLAYER_CLICK_MESSAGE.replace("%player%", name)).close();
 
 		// Format variable
 		json.replaceInText("%server%", chat.getServer().getName());

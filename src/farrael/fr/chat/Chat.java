@@ -37,7 +37,7 @@ public class Chat extends JavaPlugin{
 	@Override
 	public void onEnable() {
 		instance 			= this;
-		label				= ChatColor.BLUE + "[" + ChatColor.YELLOW + this.getName() + ChatColor.BLUE + "]";
+		label				= ChatColor.BLUE + "[" + ChatColor.YELLOW + this.getName() + ChatColor.BLUE + "] ";
 
 		// Create config loader
 		this.fileManager 	= new FileManager(this);

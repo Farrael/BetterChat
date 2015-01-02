@@ -103,12 +103,13 @@ public class ConfigManager {
 		Configuration.CONSOLE_CHAT = (boolean) this.fileManager.getData(type, "console-chat", true);
 		Configuration.PLAYER_TAB = (boolean) this.fileManager.getData(type, "player-tab", true);
 		Configuration.PLAYER_CLICK = (boolean) this.fileManager.getData(type, "player-click", true);
+		Configuration.PLAYER_CLICK_MESSAGE = (String) this.fileManager.getData(type, "player-click-message", "/w %player% ");
 		Configuration.PLAYER_HOVER = (boolean) this.fileManager.getData(type, "player-hover", true);
 		Configuration.PLAYER_HOVER_MESSAGE	= (String) this.fileManager.getData(type, "player-hover-message", "&9%time%");
 		Configuration.ENABLE = (boolean) this.fileManager.getData(type, "enable", true);
-		
+
 		this.debug = (boolean) this.fileManager.getData(type, "console-Debug", false);
-		
+
 		// Set commentaries.
 		this.fileManager.setComment(type, "join-display", false, "Affiche un message lors de la connexion.");
 		this.fileManager.setComment(type, "join-message", true, "Message lors de la connexion.");
@@ -121,16 +122,17 @@ public class ConfigManager {
 		this.fileManager.setComment(type, "player-color", true, "Change le display name avec la couleur du prefix.");
 		this.fileManager.setComment(type, "console-chat", true, "Affiche les message dans la console.");
 		this.fileManager.setComment(type, "player-tab", true, "Modifie la couleur d'un joueur dans le menu tabulation.");
-		this.fileManager.setComment(type, "player-click", true, "Active le wisph lors du clique sur le nom d\'un joueur.");
-		this.fileManager.setComment(type, "player-hover", true, "Affiche un message lors du survole du nom d\'un joueur.");
+		this.fileManager.setComment(type, "player-click", true, "Active le clique sur le nom d\'un joueur.");
+		this.fileManager.setComment(type, "player-click-message", true, "Message lors du clique sur le nom d\'un joueur.");
+		this.fileManager.setComment(type, "player-hover", true, "Active le survole du nom d\'un joueur.");
 		this.fileManager.setComment(type, "player-hover-message", true, "Message lors du survole du nom d\'un joueur.");
 		this.fileManager.setComment(type, "enable", true, "Active ou desactive le plugin.");
 		this.fileManager.setComment(type, "console-Debug", true, "Display debug message in the console.");
-		
+
 		// Save file.
 		this.fileManager.saveFile(type);
 	}
-	
+
 	/**
 	 * Print debug message to console
 	 * @param string - Debug message

@@ -10,6 +10,7 @@ import farrael.fr.chat.Chat;
 import farrael.fr.chat.managers.ConfigManager;
 import farrael.fr.chat.managers.FileManager.FileType;
 import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.utils.StringArray;
 
 public class ChatCommands implements CommandExecutor {
 	Chat plugin = Chat.instance;
@@ -20,8 +21,20 @@ public class ChatCommands implements CommandExecutor {
 				!plugin.hasPermission((Player)sender, "chat.admin"))
 			return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
 
-		if(args.length < 1)
-			return plugin.sendPluginMessage(sender, "Tapez /chat help pour les informations sur les commandes.", false);
+		if(args.length < 1) {
+			StringBuilder test = new StringBuilder();
+			test.append(ChatColor.GOLD + "# " + ChatColor.AQUA + "Description : `" + ChatColor.GREEN + plugin.getDescription().getDescription() + "\n");
+			test.append(ChatColor.GOLD + "# " + ChatColor.AQUA + "Version : `" + ChatColor.GREEN + plugin.getDescription().getVersion() + "\n");
+			test.append(ChatColor.GOLD + "# \n");
+			test.append(ChatColor.GOLD + "# " + ChatColor.AQUA + "Contributor : `"  + ChatColor.GREEN + "Farrael");
+
+			StringArray array = new StringArray(test.toString()).setTabs(new int[]{17});
+			sender.sendMessage(ChatColor.GOLD + "#--------[" + ChatColor.BLUE + plugin.getName() + ChatColor.GOLD + "]--------#");
+			sender.sendMessage(array.getPage(0));
+			sender.sendMessage(ChatColor.GOLD + "#--------------------------#");
+
+			return true;
+		}
 
 		String arg = args[0].toString();
 		if(arg.equalsIgnoreCase("help")){			
@@ -42,13 +55,9 @@ public class ChatCommands implements CommandExecutor {
 			Configuration.ENABLE = bol;
 			plugin.fileManager.setData(FileType.CONFIG, "enable", bol);
 			plugin.sendPluginMessage(sender, "Vous venez " + (bol ? "d'activer" : "de désactiver") + " le plugin.", false);
-		
+
 		} else {
-			sender.sendMessage(ChatColor.GOLD + "•---• " + ChatColor.BLUE + plugin.getName() + ChatColor.GOLD + " •---•");
-			sender.sendMessage("Description : " + plugin.getDescription().getDescription());
-			sender.sendMessage("Version : " + plugin.getDescription().getVersion());
-			sender.sendMessage("=================");
-			sender.sendMessage("Devlopped by Farrael");
+			plugin.sendPluginMessage(sender, "Tapez /chat help pour les informations sur les commandes.", false);
 		}
 
 		return true;

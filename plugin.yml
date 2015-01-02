@@ -1,7 +1,7 @@
 name: BetterChat
 main: farrael.fr.chat.Chat
 version: 1.0.0
-description: The Chat plugin
+description: Improve the minecraft chat with json messages
 commands:
     chat:
         description: Default plugin commands.

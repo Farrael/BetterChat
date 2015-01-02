@@ -112,6 +112,8 @@ public class JsonMessage {
 	 * Replace cible by source in text
 	 */
 	public JsonMessage replaceInText(String regex, String replacement){
+		this.closed = false;
+
 		for(int i = 0; i < this.part.size(); i++)
 			this.part.get(i).replaceInText(regex, replacement);
 
@@ -140,6 +142,7 @@ public class JsonMessage {
 
 		this.replace 		= null;
 		this.replace_temp 	= null;
+		this.closed			= false;
 		return this;
 	}
 
@@ -167,10 +170,8 @@ public class JsonMessage {
 	 * Close the JsonMessage
 	 */
 	public JsonMessage finish() {
-		this.apply();
-
-		this.closed = true;
 		this.string = this.getText();
+		this.closed = true;
 		return this;
 	}
 

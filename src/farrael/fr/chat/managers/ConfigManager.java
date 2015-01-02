@@ -99,6 +99,8 @@ public class ConfigManager {
 		Configuration.FIRST_MESSAGE_BROADCAST = (String) this.fileManager.getData(type, "first-message-broadcast", "Bienvenue a %player% sur le serveur.");
 		Configuration.FIRST_MESSAGE_PLAYER = (String) this.fileManager.getData(type, "first-message-player", "Bienvenue %player% sur le serveur %server%.");
 		Configuration.CHAT_FORMAT = (String) this.fileManager.getData(type, "chat-format", "%player% &f: %message%");
+		Configuration.WHISP_TO_FORMAT = (String) this.fileManager.getData(type, "whisp-to-format", "&7[&6A %color%%player%&7] &f%message%");
+		Configuration.WHISP_FROM_FORMAT = (String) this.fileManager.getData(type, "whisp-from-format", "&7[&6De %color%%player%&7] &f%message%");
 		Configuration.PLAYER_COLOR = (boolean) this.fileManager.getData(type, "player-color", true);
 		Configuration.CONSOLE_CHAT = (boolean) this.fileManager.getData(type, "console-chat", true);
 		Configuration.PLAYER_TAB = (boolean) this.fileManager.getData(type, "player-tab", true);
@@ -119,6 +121,8 @@ public class ConfigManager {
 		this.fileManager.setComment(type, "first-message-broadcast", true, "Message lors de la premiere connexion ( server ).");
 		this.fileManager.setComment(type, "first-message-player", true, "Message lors de la premiere connexion ( player only ).");
 		this.fileManager.setComment(type, "chat-format", true, "Format des messages dans le chat.");
+		this.fileManager.setComment(type, "whisp-to-format", true, "Format lors d'envois de message privee");
+		this.fileManager.setComment(type, "whisp-from-format", true, "Format lors de la reception de message privee");
 		this.fileManager.setComment(type, "player-color", true, "Change le display name avec la couleur du prefix.");
 		this.fileManager.setComment(type, "console-chat", true, "Affiche les message dans la console.");
 		this.fileManager.setComment(type, "player-tab", true, "Modifie la couleur d'un joueur dans le menu tabulation.");

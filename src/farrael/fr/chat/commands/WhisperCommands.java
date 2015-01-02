@@ -7,6 +7,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import farrael.fr.chat.Chat;
+import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.utils.StringHelper;
 
 public class WhisperCommands implements CommandExecutor {
 	Chat plugin = Chat.instance;
@@ -26,8 +28,8 @@ public class WhisperCommands implements CommandExecutor {
 		if(target == null)
 			return plugin.sendPluginMessage(sender, "Le joueur " + args[0] + " n'est pas connecté.", true);
 
-		target.sendMessage("[From " + player.getDisplayName() + "] " + message);
-		player.sendMessage("[To " + target.getDisplayName() + "] " + message);
+		StringHelper.createJsonMessage(Configuration.WHISP_TO_FORMAT, message, target).replaceInText("%target%", StringHelper.getDisplayName(target, true)).send(player);
+		StringHelper.createJsonMessage(Configuration.WHISP_FROM_FORMAT, message, player).replaceInText("%target%", StringHelper.getDisplayName(player, true)).send(target);
 		return false;
 	}
 

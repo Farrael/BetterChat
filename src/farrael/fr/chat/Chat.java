@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 import org.anjocaido.groupmanager.GroupManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,8 @@ public class Chat extends JavaPlugin{
 
 	//-------------/ Variables /-------------//
 	public static Chat 		instance;
+	public static String	label;
+
 	public FileManager		fileManager;
 	public ConfigManager	configManager;
 
@@ -54,6 +57,9 @@ public class Chat extends JavaPlugin{
 	@Override
 	public void onEnable() {
 		instance 			= this;
+		label				= ChatColor.BLUE + "[" + ChatColor.YELLOW + this.getName() + ChatColor.BLUE + "]";
+
+		// Create config loader
 		this.fileManager 	= new FileManager(this);
 		this.configManager	= new ConfigManager(this, fileManager);
 		this.enable 		= true;
@@ -81,12 +87,12 @@ public class Chat extends JavaPlugin{
 		// Listeners
 		registreEvents(new PlayerListener(), new PermissionsExListener());
 
-		// Load files content
+		// Loading configuration
 		this.fileManager.newFiles(FileType.CONFIG);
 		this.configManager.load(false);
 
 		// Commands Listener
-		getCommand("chat").setExecutor(new ChatCommands(this));
+		getCommand("chat").setExecutor(new ChatCommands());
 	}
 
 	/**
@@ -113,8 +119,23 @@ public class Chat extends JavaPlugin{
 	 * @param player
 	 * @param commande
 	 */
-	public void getUsage(Player player, String commande){
+	public boolean getUsage(Player player, String commande){
 		player.sendMessage(ChatColor.RED + "Utilisation :");
 		player.sendMessage(ChatColor.RED + commande);
+		return true;
+	}
+
+	/**
+	 * Send message with plugin label
+	 * @param target - Target
+	 * @param message - Message to send
+	 */
+	public boolean sendPluginMessage(CommandSender target, String message, boolean isError) {
+		ChatColor color = ChatColor.BLUE;
+		if(isError)
+			color = ChatColor.RED;
+
+		target.sendMessage(label + color + message);
+		return true;
 	}
 }

@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import farrael.fr.chat.commands.ChatCommands;
+import farrael.fr.chat.commands.WhisperCommands;
 import farrael.fr.chat.listeners.PermissionsExListener;
 import farrael.fr.chat.listeners.PlayerListener;
 import farrael.fr.chat.managers.ConfigManager;
@@ -49,11 +50,9 @@ public class Chat extends JavaPlugin{
 
 	public boolean			useGroupManager;
 	public boolean			usePermissionEx;
-
 	public GroupManager 	groupManager;
 
 	public final Logger 	logger = Bukkit.getServer().getLogger();
-
 	@Override
 	public void onEnable() {
 		instance 			= this;
@@ -93,6 +92,7 @@ public class Chat extends JavaPlugin{
 
 		// Commands Listener
 		getCommand("chat").setExecutor(new ChatCommands());
+		getCommand("w").setExecutor(new WhisperCommands());
 	}
 
 	/**
@@ -122,7 +122,7 @@ public class Chat extends JavaPlugin{
 	public boolean getUsage(Player player, String commande){
 		player.sendMessage(ChatColor.RED + "Utilisation :");
 		player.sendMessage(ChatColor.RED + commande);
-		return true;
+		return false;
 	}
 
 	/**
@@ -136,6 +136,6 @@ public class Chat extends JavaPlugin{
 			color = ChatColor.RED;
 
 		target.sendMessage(label + color + message);
-		return true;
+		return false;
 	}
 }

@@ -5,6 +5,8 @@ description: The Chat plugin
 commands:
     chat:
         description: Default plugin commands.
+    w:
+        description: Whisper commands.
 permissions:
     chat.*:
         description: Gives access to all commands.

@@ -22,16 +22,16 @@ import farrael.fr.chat.Chat;
 import farrael.fr.chat.storage.Configuration;
 import farrael.fr.chat.utils.StringHelper;
 
+@SuppressWarnings("deprecation")
 public class PlayerListener implements Listener{
 	Chat chat = Chat.instance;
 
-	@SuppressWarnings("deprecation")
+
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
 		if(!Configuration.ENABLE) return;
 
 		setChatName(event.getPlayer());
-
 		event.setJoinMessage("");
 		if(!event.getPlayer().hasPlayedBefore() && Configuration.FIRST_MESSAGE_DISPLAY){
 			List<Player> c =  Arrays.asList(Bukkit.getOnlinePlayers());
@@ -66,7 +66,6 @@ public class PlayerListener implements Listener{
 			Bukkit.getConsoleSender().sendMessage(StringHelper.getDisplayName(event.getPlayer(), Configuration.PLAYER_COLOR) + " : " + event.getMessage());
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onCommands(final PlayerCommandPreprocessEvent event){
 		Bukkit.getScheduler().runTaskLater(chat, new BukkitRunnable(){
@@ -84,6 +83,10 @@ public class PlayerListener implements Listener{
 		}, 5L);
 	}
 
+	/**
+	 * Save player suffix and prefix in metadata and set PlayerListName.
+	 * @param player
+	 */
 	public static void setChatName(Player player){
 		if(player == null) return;
 		String prefix = getPrefix(player);
@@ -100,6 +103,10 @@ public class PlayerListener implements Listener{
 		player.setMetadata("suffix", new FixedMetadataValue(Chat.instance, ChatColor.translateAlternateColorCodes('&', suffix)));
 	}
 
+	/**
+	 * Return player prefix
+	 * @param player
+	 */
 	public static String getPrefix(Player player){
 		if(Chat.instance.useGroupManager){
 			AnjoPermissionsHandler handler = Chat.instance.groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -112,6 +119,10 @@ public class PlayerListener implements Listener{
 		return "";
 	}
 
+	/**
+	 * Return player suffix
+	 * @param player
+	 */
 	public static String getSuffix(Player player){
 		if(Chat.instance.useGroupManager){
 			AnjoPermissionsHandler handler = Chat.instance.groupManager.getWorldsHolder().getWorldPermissions(player);
@@ -124,6 +135,10 @@ public class PlayerListener implements Listener{
 		return "";
 	}
 
+	/**
+	 * Return last color with '&'
+	 * @param prefix
+	 */
 	public static String getColor(String prefix){
 		int index = prefix.lastIndexOf('&');
 		if(index > -1)
@@ -131,6 +146,10 @@ public class PlayerListener implements Listener{
 		return "";
 	}
 
+	/**
+	 * Return empty string if null.
+	 * @param value
+	 */
 	public static String nonNull(String value){
 		return value != null ? value : "";
 	}

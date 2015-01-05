@@ -99,10 +99,16 @@ public class Chat extends JavaPlugin{
 	 * @param player
 	 * @param commande
 	 */
-	public boolean getUsage(Player player, String commande){
-		player.sendMessage(ChatColor.RED + "Utilisation :");
-		player.sendMessage(ChatColor.RED + commande);
-		return false;
+	public String getUsage(String commande){
+		String[] splitted = commande.split(":");
+
+		String cmd = splitted[0];
+		String effect = splitted.length > 1 ? splitted[1] : "";
+
+		cmd = cmd.replace("[", ChatColor.RED + "[").replace("]", "]" + ChatColor.GOLD);
+		cmd = cmd.replace("<", ChatColor.GRAY + "<").replace(">", ">" + ChatColor.GOLD);
+
+		return ChatColor.GOLD + cmd + (effect.length() > 1 ? " : " + ChatColor.GREEN + effect : "");
 	}
 
 	/**
@@ -117,5 +123,20 @@ public class Chat extends JavaPlugin{
 
 		target.sendMessage(label + color + message);
 		return false;
+	}
+
+	/**
+	 * Return list of arguments separate with space.
+	 * @param args - List of arguments
+	 * @param start - Start index
+	 */
+	public String getArguments(String[] args, int start) {
+		String result = "";
+		if(start < args.length) {
+			for(int i = start; i < args.length; i++)
+				result += (i == start ? " " : "") + args[i];
+		}
+
+		return result;
 	}
 }

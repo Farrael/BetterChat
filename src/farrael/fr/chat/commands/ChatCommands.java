@@ -29,18 +29,18 @@ public class ChatCommands implements CommandExecutor {
 			test.append(ChatColor.GOLD + "# " + ChatColor.AQUA + "Contributor : `"  + ChatColor.GREEN + "Farrael");
 
 			StringArray array = new StringArray(test.toString()).setTabs(new int[]{17});
-			sender.sendMessage(ChatColor.GOLD + "#--------[" + ChatColor.BLUE + plugin.getName() + ChatColor.GOLD + "]--------#");
+			sender.sendMessage(ChatColor.GOLD + "\n#--------[" + ChatColor.BLUE + plugin.getName() + ChatColor.GOLD + "]--------#");
 			sender.sendMessage(array.getPage(0));
-			sender.sendMessage(ChatColor.GOLD + "#--------------------------#");
+			sender.sendMessage(ChatColor.GOLD + "#--------------------------#\n");
 
 			return true;
 		}
 
 		String arg = args[0].toString();
 		if(arg.equalsIgnoreCase("help")){			
-			sender.sendMessage(ChatColor.BLUE + "Chat help [1/1]");
-			sender.sendMessage(ChatColor.BLUE + "/chat reload : Reload la configuration.");
-			sender.sendMessage(ChatColor.BLUE + "/chat on/off : Active ou désactive le plugin.");
+			sender.sendMessage(ChatColor.GOLD + "\n#----- " + ChatColor.GREEN + "Aide [1/1]" + ChatColor.GOLD + " -----#");
+			sender.sendMessage(plugin.getUsage("/chat reload : Reload la configuration."));
+			sender.sendMessage(plugin.getUsage("/chat [on/off] : Active ou désactive le plugin."));
 
 		} else if(arg.equalsIgnoreCase("reload")){			
 			plugin.fileManager.getFile(FileType.CONFIG).update();

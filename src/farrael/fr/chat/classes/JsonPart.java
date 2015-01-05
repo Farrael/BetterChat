@@ -244,8 +244,8 @@ public class JsonPart {
 
 		int index; String before, after;
 		ChatColor color = this.color;
+		ArrayList<ChatColor> format = this.style;
 		JsonPart json;
-		ArrayList<ChatColor> format = new ArrayList<ChatColor>();
 		while((index = text.indexOf(Character.toString(ChatColor.COLOR_CHAR))) != -1) {
 			before = text.substring(0, index);
 			after = text.substring(index + 2);

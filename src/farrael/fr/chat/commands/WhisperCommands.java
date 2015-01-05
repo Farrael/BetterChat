@@ -1,6 +1,7 @@
 package farrael.fr.chat.commands;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -20,11 +21,13 @@ public class WhisperCommands implements CommandExecutor {
 			return plugin.sendPluginMessage(sender, "Only Players in game command supported.", true);
 
 		Player player = (Player)sender;
-		if(args.length < 2)
-			return plugin.getUsage(player, "/w [name] [message]");
+		if(args.length < 2) {
+			player.sendMessage(ChatColor.RED + "Il manque des arguments...\n" + plugin.getUsage("/w [name] [message]"));
+			return false;
+		}
 
 		Player target 	= Bukkit.getPlayerExact(args[0].toString());
-		String message 	= args[1].toString();
+		String message 	= plugin.getArguments(args, 1);
 		if(target == null)
 			return plugin.sendPluginMessage(sender, "Le joueur " + args[0] + " n'est pas connecté.", true);
 

@@ -13,7 +13,7 @@ import farrael.fr.chat.storage.Configuration;
 import farrael.fr.chat.utils.StringArray;
 
 public class ChatCommands implements CommandExecutor {
-	Chat plugin = Chat.instance;
+	Chat plugin = Chat.getInstance();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {

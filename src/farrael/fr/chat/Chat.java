@@ -21,7 +21,7 @@ import farrael.fr.chat.managers.FileManager.FileType;
 public class Chat extends JavaPlugin{
 
 	//-----------/ Static /------------//
-	public static Chat 	instance;
+	private static Chat 	instance;
 	public static String 	label;
 
 	//-------/ Configurations /--------//
@@ -73,6 +73,13 @@ public class Chat extends JavaPlugin{
 		// Commands Listener
 		getCommand("chat").setExecutor(new ChatCommands());
 		getCommand("w").setExecutor(new WhisperCommands());
+	}
+
+	/**
+	 * Return plugin instance
+	 */
+	public static Chat getInstance(){
+		return instance;
 	}
 
 	/**

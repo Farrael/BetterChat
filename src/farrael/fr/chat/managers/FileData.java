@@ -34,19 +34,17 @@ public class FileData {
 		this.name = name;
 		this.path = path;
 
-		if(new File(path, name).exists()){
+		this.file = new File(path, name);
+		if(file.exists()){
 			if(!name.contains("."))
 				this.isFolder = true;
-			this.file = new File(path, name);
 		} else {
-			File Create = new File(path, name);
 			if(!name.contains(".")){
-				try {Create.mkdir();} catch (Exception e) {e.printStackTrace();}
+				try {this.file.mkdir();} catch (Exception e) {e.printStackTrace();}
 				this.isFolder = true;
 			} else {
-				try {Create.createNewFile();} catch (Exception e) {e.printStackTrace();}
+				try {this.file.createNewFile();} catch (Exception e) {e.printStackTrace();}
 			}
-			this.file = Create;
 		}
 
 		if(!this.isFolder){

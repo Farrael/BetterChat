@@ -12,7 +12,7 @@ import farrael.fr.chat.storage.Configuration;
 import farrael.fr.chat.utils.StringHelper;
 
 public class WhisperCommands implements CommandExecutor {
-	Chat plugin = Chat.instance;
+	Chat plugin = Chat.getInstance();
 
 	@SuppressWarnings("deprecation")
 	@Override

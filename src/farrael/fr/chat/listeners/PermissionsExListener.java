@@ -13,7 +13,7 @@ import ru.tehkode.permissions.events.PermissionEntityEvent.Action;
 import farrael.fr.chat.Chat;
 
 public class PermissionsExListener implements Listener{
-	Chat chat = Chat.instance;
+	Chat chat = Chat.getInstance();
 
 	@EventHandler
 	public void onPermissionsChanged(PermissionEntityEvent event){

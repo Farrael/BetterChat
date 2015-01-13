@@ -63,7 +63,7 @@ public class StringHelper {
 		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion(Configuration.PLAYER_CLICK_MESSAGE.replace("%player%", name)).close();
 
 		// Format variable
-		json.replaceInText("%server%", Chat.instance.getServer().getName());
+		json.replaceInText("%server%", Chat.getInstance().getServer().getName());
 		json.replaceInText("%suffix%", player.hasMetadata("suffix") ? player.getMetadata("suffix").get(0).asString() : "");
 		json.replaceInText("%prefix%", player.hasMetadata("prefix") ? player.getMetadata("prefix").get(0).asString() : "");
 		json.replaceInText("%color%" , player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "");

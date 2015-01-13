@@ -1,6 +1,7 @@
 package farrael.fr.chat.listeners;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
@@ -24,7 +25,7 @@ import farrael.fr.chat.utils.StringHelper;
 
 @SuppressWarnings("deprecation")
 public class PlayerListener implements Listener{
-	Chat chat = Chat.instance;
+	Chat chat = Chat.getInstance();
 
 
 	@EventHandler
@@ -34,7 +35,7 @@ public class PlayerListener implements Listener{
 		setChatName(event.getPlayer());
 		event.setJoinMessage("");
 		if(!event.getPlayer().hasPlayedBefore() && Configuration.FIRST_MESSAGE_DISPLAY){
-			List<Player> c =  Arrays.asList(Bukkit.getOnlinePlayers());
+			List<Player> c = new LinkedList<Player>(Arrays.asList(Bukkit.getOnlinePlayers()));
 			c.remove(event.getPlayer());
 
 			StringHelper.createJsonMessage(Configuration.FIRST_MESSAGE_BROADCAST, "", event.getPlayer()).sendToList(c);
@@ -95,12 +96,12 @@ public class PlayerListener implements Listener{
 		if(prefix != ""){
 			String color = getColor(prefix);
 			if(color != "")
-				player.setMetadata("color", new FixedMetadataValue(Chat.instance, color));
+				player.setMetadata("color", new FixedMetadataValue(Chat.getInstance(), color));
 			player.setPlayerListName(color + player.getName());
 		}
 
-		player.setMetadata("prefix", new FixedMetadataValue(Chat.instance, ChatColor.translateAlternateColorCodes('&', prefix)));
-		player.setMetadata("suffix", new FixedMetadataValue(Chat.instance, ChatColor.translateAlternateColorCodes('&', suffix)));
+		player.setMetadata("prefix", new FixedMetadataValue(Chat.getInstance(), ChatColor.translateAlternateColorCodes('&', prefix)));
+		player.setMetadata("suffix", new FixedMetadataValue(Chat.getInstance(), ChatColor.translateAlternateColorCodes('&', suffix)));
 	}
 
 	/**
@@ -108,11 +109,11 @@ public class PlayerListener implements Listener{
 	 * @param player
 	 */
 	public static String getPrefix(Player player){
-		if(Chat.instance.useGroupManager){
-			AnjoPermissionsHandler handler = Chat.instance.groupManager.getWorldsHolder().getWorldPermissions(player);
+		if(Chat.getInstance().useGroupManager){
+			AnjoPermissionsHandler handler = Chat.getInstance().groupManager.getWorldsHolder().getWorldPermissions(player);
 			return handler != null ? nonNull(handler.getUserPrefix(player.getName())) : "";
 		}
-		if(Chat.instance.usePermissionEx){
+		if(Chat.getInstance().usePermissionEx){
 			PermissionUser user = PermissionsEx.getUser(player);
 			return user != null ? nonNull(user.getPrefix(player.getWorld().getName())) : "";
 		}
@@ -124,11 +125,11 @@ public class PlayerListener implements Listener{
 	 * @param player
 	 */
 	public static String getSuffix(Player player){
-		if(Chat.instance.useGroupManager){
-			AnjoPermissionsHandler handler = Chat.instance.groupManager.getWorldsHolder().getWorldPermissions(player);
+		if(Chat.getInstance().useGroupManager){
+			AnjoPermissionsHandler handler = Chat.getInstance().groupManager.getWorldsHolder().getWorldPermissions(player);
 			return handler != null ? nonNull(handler.getUserSuffix(player.getName())) : "";
 		}
-		if(Chat.instance.usePermissionEx){
+		if(Chat.getInstance().usePermissionEx){
 			PermissionUser user = PermissionsEx.getUser(player);
 			return user != null ? nonNull(user.getSuffix(player.getWorld().getName())) : "";
 		}

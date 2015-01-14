@@ -141,7 +141,7 @@ public class Chat extends JavaPlugin{
 		String result = "";
 		if(start < args.length) {
 			for(int i = start; i < args.length; i++)
-				result += (i == start ? " " : "") + args[i];
+				result += (i != start ? " " : "") + args[i];
 		}
 
 		return result;

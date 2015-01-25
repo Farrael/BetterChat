@@ -6,6 +6,7 @@ public class Configuration {
 	public static String 	CHAT_FORMAT;
 	public static String 	WHISP_TO_FORMAT;
 	public static String 	WHISP_FROM_FORMAT;
+	public static String  	WHISP_SPY_FORMAT;
 
 	public static String 	JOIN_MESSAGE;
 	public static String 	LEAVE_MESSAGE;

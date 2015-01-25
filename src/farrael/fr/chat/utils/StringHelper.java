@@ -14,9 +14,10 @@ import farrael.fr.chat.storage.Configuration;
 public class StringHelper {
 
 	/**
-	 * Return the last color used in string with symbole
+	 * Return the first/last color used in string with symbole
 	 * @param altColorChar - Color symbole
 	 * @param string - String to parse
+	 * @param reverse - First or last color
 	 */
 	public static ChatColor getColorFromString(char altColorChar, String string, boolean reverse) {
 		ChatColor result = ChatColor.WHITE;
@@ -53,7 +54,7 @@ public class StringHelper {
 		String name = player.getName();
 		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
 		Location l  = player.getLocation();
-		message 	= message.replace("\\", "\\\\\\\\").replace("\"", "\\\\\"");
+		message 	= message.replace("\\", "\\\\\\\\").replace("\"", "\\\"");
 
 		JsonMessage json = new JsonMessage(format);
 

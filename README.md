@@ -27,6 +27,7 @@ Compatible Bukkit and Spigot 1.8.1, PermissionEx and GroupManager.
 * chat-format - Chat format (see [format](#format))
 * whisp-to-format - Sender wispher format (see [format](#format))
 * whisp-from-format - Receiver wispher format (see [format](#format))
+* whisp-spy-format - Interception wispher format (see [format](#format))
 * player-color - Change player display-name with color
 * console-chat - Display message on console
 * player-tab - Change player display name on tabulation

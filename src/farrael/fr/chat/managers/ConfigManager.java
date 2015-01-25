@@ -1,5 +1,7 @@
 package farrael.fr.chat.managers;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -56,6 +58,9 @@ public class ConfigManager {
 		case CONFIG:
 			this.loadConfig(type);
 			break;
+		case USER:
+			this.loadUser(type);
+			break;
 		default:
 			break;
 		}
@@ -101,6 +106,7 @@ public class ConfigManager {
 		Configuration.CHAT_FORMAT = (String) this.fileManager.getData(type, "chat-format", "%player% &f: %message%");
 		Configuration.WHISP_TO_FORMAT = (String) this.fileManager.getData(type, "whisp-to-format", "&7[&6A %color%%player%&7] &f%message%");
 		Configuration.WHISP_FROM_FORMAT = (String) this.fileManager.getData(type, "whisp-from-format", "&7[&6De %color%%player%&7] &f%message%");
+		Configuration.WHISP_SPY_FORMAT = (String) this.fileManager.getData(type, "whisp-spy-format", "&7[&6De %color%%player% &6a %color%%target%&7] &f%message%");
 		Configuration.PLAYER_COLOR = (boolean) this.fileManager.getData(type, "player-color", true);
 		Configuration.CONSOLE_CHAT = (boolean) this.fileManager.getData(type, "console-chat", true);
 		Configuration.PLAYER_TAB = (boolean) this.fileManager.getData(type, "player-tab", true);
@@ -123,6 +129,7 @@ public class ConfigManager {
 		this.fileManager.setComment(type, "chat-format", true, "Format des messages dans le chat.");
 		this.fileManager.setComment(type, "whisp-to-format", true, "Format lors d'envois de message privee");
 		this.fileManager.setComment(type, "whisp-from-format", true, "Format lors de la reception de message privee");
+		this.fileManager.setComment(type, "whisp-spy-format", true, "Format lors de l'interception de message privee");
 		this.fileManager.setComment(type, "player-color", true, "Change le display name avec la couleur du prefix.");
 		this.fileManager.setComment(type, "console-chat", true, "Affiche les message dans la console.");
 		this.fileManager.setComment(type, "player-tab", true, "Modifie la couleur d'un joueur dans le menu tabulation.");
@@ -135,6 +142,11 @@ public class ConfigManager {
 
 		// Save file.
 		this.fileManager.saveFile(type);
+	}
+
+	private void loadUser(FileType type){
+		for(String uuid : this.fileManager.getSection(type).getKeys(false))
+			plugin.spy.add(UUID.fromString(uuid));
 	}
 
 	/**

@@ -1,21 +1,31 @@
 name: BetterChat
 main: farrael.fr.chat.Chat
-version: 1.0.0
+version: 1.1.2
 description: Improve the minecraft chat with json messages
 commands:
     chat:
         description: Default plugin commands.
     w:
         description: Whisper commands.
+    r:
+        description: Reply commands.
 permissions:
     chat.*:
         description: Gives access to all commands.
         children:
             chat.admin: true
             chat.color: true
+            chat.wisph: true
+            chat.spy: true
     chat.admin:
         description: Allows you to edit plugin.
         default: op
     chat.color:
-        description: Allows you write with color.
+        description: Allows you to write with color.
+        default: op
+    chat.wisph:
+        description: Allows you to wisph player.
+        default: op
+    chat.spy:
+        description: Allows you to use spy command.
         default: op

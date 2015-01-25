@@ -17,7 +17,8 @@ public class FileManager {
 	private JavaPlugin plugin;
 
 	public enum FileType{
-		CONFIG		("config.yml"	, "");
+		CONFIG		("config.yml"	, ""),
+		USER		("user.yml"	, "");
 
 		private String file;
 		private String section;

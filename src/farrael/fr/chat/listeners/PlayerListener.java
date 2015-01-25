@@ -49,6 +49,9 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event){
 		if(!Configuration.ENABLE) return;
+		
+		if(chat.whisper.containsKey(event.getPlayer().getUniqueId()))
+			chat.whisper.remove(event.getPlayer().getUniqueId());
 
 		event.setQuitMessage("");
 		if(Configuration.LEAVE_DISPLAY)

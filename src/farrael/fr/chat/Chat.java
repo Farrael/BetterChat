@@ -1,5 +1,8 @@
 package farrael.fr.chat;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.anjocaido.groupmanager.GroupManager;
@@ -32,6 +35,10 @@ public class Chat extends JavaPlugin{
 	public boolean		useGroupManager;
 	public boolean		usePermissionEx;
 	public GroupManager 	groupManager;
+
+	//----------/ Wispher /----------//
+	public HashMap<UUID, UUID> whisper = new HashMap<UUID, UUID>();
+	public ArrayList<UUID> spy = new ArrayList<UUID>();
 
 	public final Logger 	logger = Bukkit.getServer().getLogger();
 	@Override
@@ -67,12 +74,13 @@ public class Chat extends JavaPlugin{
 		registreEvents(new PlayerListener(), new PermissionsExListener());
 
 		// Loading configuration
-		this.fileManager.newFiles(FileType.CONFIG);
+		this.fileManager.newFiles(FileType.CONFIG, FileType.USER);
 		this.configManager.load(false);
 
 		// Commands Listener
 		getCommand("chat").setExecutor(new ChatCommands());
 		getCommand("w").setExecutor(new WhisperCommands());
+		getCommand("r").setExecutor(new WhisperCommands());
 	}
 
 	/**

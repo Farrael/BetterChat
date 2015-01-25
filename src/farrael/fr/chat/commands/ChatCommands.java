@@ -1,5 +1,6 @@
 package farrael.fr.chat.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,12 +16,9 @@ import farrael.fr.chat.utils.StringArray;
 public class ChatCommands implements CommandExecutor {
 	Chat plugin = Chat.getInstance();
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		if((sender instanceof Player) && 
-				!plugin.hasPermission((Player)sender, "chat.admin"))
-			return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
-
 		if(args.length < 1) {
 			StringBuilder test = new StringBuilder();
 			test.append(ChatColor.GOLD + "# " + ChatColor.AQUA + "Description : `" + ChatColor.GREEN + plugin.getDescription().getDescription() + "\n");
@@ -37,9 +35,59 @@ public class ChatCommands implements CommandExecutor {
 		}
 
 		String arg = args[0].toString();
+		if(arg.equalsIgnoreCase("spy")){
+			if((sender instanceof Player) && 
+					!plugin.hasPermission((Player)sender, "chat.spy"))
+				return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
+
+			Player target = null;
+			Boolean enable = false;
+
+			if(args.length >= 3) {
+				target = Bukkit.getPlayer(args[1]);
+				if(target == null)
+					return plugin.sendPluginMessage(sender, "Le joueur " + args[1] + " n'est pas en ligne.", true);
+
+				if(args[2].equalsIgnoreCase("on"))
+					enable = true;
+			} else if(args.length == 2){
+				if(args[1].equalsIgnoreCase("on")) {
+					if(!(sender instanceof Player))
+						return plugin.sendPluginMessage(sender, "Impossible d'executer la commande sans être joueur.", true);
+
+					enable = true;
+					target = (Player)sender;
+				} else if(!args[1].equalsIgnoreCase("off")){
+					target = Bukkit.getPlayer(args[1]);
+					if(target == null)
+						return plugin.sendPluginMessage(sender, "Le joueur " + args[1] + " n'est pas en ligne.", true);
+
+					if(!plugin.spy.contains(target.getUniqueId()))
+						enable = true;
+				}
+			} else {
+				target = (Player)sender;				
+				if(!plugin.spy.contains(target.getUniqueId()))
+					enable = true;
+			}
+
+			plugin.fileManager.setData(FileType.USER, target.getUniqueId(), enable ? true : null);
+			if(enable && !plugin.spy.contains(target.getUniqueId()))
+				plugin.spy.add(target.getUniqueId());
+			else if(!enable && plugin.spy.contains(target.getUniqueId()))
+				plugin.spy.remove(target.getUniqueId());
+
+			plugin.sendPluginMessage(sender, "Social spy " + (enable ? "" : "dés") + "activé pour " + target.getDisplayName(), false);
+		}
+
+		if((sender instanceof Player) && 
+				!plugin.hasPermission((Player)sender, "chat.admin"))
+			return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
+
 		if(arg.equalsIgnoreCase("help")){			
 			sender.sendMessage(ChatColor.GOLD + "\n#----- " + ChatColor.GREEN + "Aide [1/1]" + ChatColor.GOLD + " -----#");
 			sender.sendMessage(plugin.getUsage("/chat reload : Reload la configuration."));
+			sender.sendMessage(plugin.getUsage("/chat spy <player> [on/off]: Active ou désactivé le social spy."));
 			sender.sendMessage(plugin.getUsage("/chat [on/off] : Active ou désactive le plugin."));
 
 		} else if(arg.equalsIgnoreCase("reload")){			

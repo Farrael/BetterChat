@@ -49,7 +49,7 @@ public class PlayerListener implements Listener{
 	@EventHandler
 	public void onPlayerLeave(PlayerQuitEvent event){
 		if(!Configuration.ENABLE) return;
-		
+
 		if(chat.whisper.containsKey(event.getPlayer().getUniqueId()))
 			chat.whisper.remove(event.getPlayer().getUniqueId());
 
@@ -67,7 +67,7 @@ public class PlayerListener implements Listener{
 
 		//Send Consol Message
 		if(Configuration.CONSOLE_CHAT)
-			Bukkit.getConsoleSender().sendMessage(StringHelper.getDisplayName(event.getPlayer(), Configuration.PLAYER_COLOR) + " : " + event.getMessage());
+			Bukkit.getConsoleSender().sendMessage(StringHelper.getPlayerName(event.getPlayer(), false, Configuration.PLAYER_COLOR) + " : " + event.getMessage());
 	}
 
 	@EventHandler

@@ -78,6 +78,7 @@ public class ChatCommands implements CommandExecutor {
 				plugin.spy.remove(target.getUniqueId());
 
 			plugin.sendPluginMessage(sender, "Social spy " + (enable ? "" : "dés") + "activé pour " + target.getDisplayName(), false);
+			return false;
 		}
 
 		if((sender instanceof Player) && 

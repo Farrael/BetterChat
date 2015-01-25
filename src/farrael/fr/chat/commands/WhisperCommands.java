@@ -58,11 +58,11 @@ public class WhisperCommands implements CommandExecutor {
 			return plugin.sendPluginMessage(sender, "Le joueur " + args[0] + " n'est pas connecté.", true);
 
 		plugin.whisper.put(target.getUniqueId(), player.getUniqueId());
-		StringHelper.createJsonMessage(Configuration.WHISP_TO_FORMAT, message, target).replaceInText("%target%", StringHelper.getDisplayName(target, true)).send(player);
-		StringHelper.createJsonMessage(Configuration.WHISP_FROM_FORMAT, message, player).replaceInText("%target%", StringHelper.getDisplayName(player, true)).send(target);
+		StringHelper.createJsonMessage(Configuration.WHISP_TO_FORMAT, message, target).replaceInText("%target%", StringHelper.getPlayerName(target, false, true)).send(player);
+		StringHelper.createJsonMessage(Configuration.WHISP_FROM_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(player, false, true)).send(target);
 
 		if(!plugin.spy.isEmpty()) {
-			JsonMessage spy_message = StringHelper.createJsonMessage(Configuration.WHISP_SPY_FORMAT, message, player).replaceInText("%target%", StringHelper.getDisplayName(target, true));
+			JsonMessage spy_message = StringHelper.createJsonMessage(Configuration.WHISP_SPY_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(target, false, true));
 			for(UUID uuid : plugin.spy){
 				Player spy = Bukkit.getPlayer(uuid);
 				if(spy != null && spy.isOnline())

@@ -54,12 +54,12 @@ public class StringHelper {
 		String name = player.getName();
 		String date = (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date());
 		Location l  = player.getLocation();
-		message 	= message.replace("\\", "\\\\\\\\").replace("\"", "\\\"");
+		message 	= message.replace("\\", "\\\\").replace("\"", "\\\"");
 
 		JsonMessage json = new JsonMessage(format);
 
 		// Format player
-		json.replace("%player%").text(getDisplayName(player, Configuration.PLAYER_COLOR));
+		json.replace("%player%").text(getPlayerName(player, true, Configuration.PLAYER_COLOR));
 		if(Configuration.PLAYER_HOVER) json.getPart().hover(Configuration.PLAYER_HOVER_MESSAGE);
 		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion(Configuration.PLAYER_CLICK_MESSAGE.replace("%player%", name)).close();
 
@@ -90,7 +90,8 @@ public class StringHelper {
 	/**
 	 * Get player display name with/without color
 	 */
-	public static String getDisplayName(Player player, boolean color){
-		return (color ? (player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "") : "") + player.getDisplayName() != null ? player.getDisplayName() : player.getName();
+	public static String getPlayerName(Player player, boolean display, boolean color){
+		String name = (display ? (player.getDisplayName() != null ? player.getDisplayName() : player.getName()) : player.getName());
+		return (color ? (player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "") : "") + name;
 	}
 }

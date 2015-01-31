@@ -65,7 +65,7 @@ public class WhisperCommands implements CommandExecutor {
 			JsonMessage spy_message = StringHelper.createJsonMessage(Configuration.WHISP_SPY_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(target, false, true));
 			for(UUID uuid : plugin.spy){
 				Player spy = Bukkit.getPlayer(uuid);
-				if(spy != null && spy.isOnline())
+				if(spy != null && spy.isOnline() && spy.getUniqueId() != target.getUniqueId() && spy.getUniqueId() != player.getUniqueId())
 					spy_message.send(spy);
 			}
 		}

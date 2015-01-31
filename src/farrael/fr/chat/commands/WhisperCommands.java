@@ -28,7 +28,7 @@ public class WhisperCommands implements CommandExecutor {
 		Player target;
 		String message;
 
-		if(!plugin.hasPermission(player, "chat.wisph"))
+		if(!plugin.hasPermission(player, "chat.whisp"))
 			return plugin.sendPluginMessage(sender, ConfigManager.permission, true);
 
 		if(cmd.getLabel().equalsIgnoreCase("w")) {

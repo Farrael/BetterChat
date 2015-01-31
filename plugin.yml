@@ -23,7 +23,7 @@ permissions:
     chat.color:
         description: Allows you to write with color.
         default: op
-    chat.wisph:
+    chat.whisp:
         description: Allows you to wisph player.
         default: op
     chat.spy:

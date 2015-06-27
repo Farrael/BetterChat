@@ -8,15 +8,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import farrael.fr.chat.Chat;
-import farrael.fr.chat.managers.ConfigManager;
-import farrael.fr.chat.managers.FileManager.FileType;
-import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.configuration.ConfigManager;
+import farrael.fr.chat.configuration.Configuration;
+import farrael.fr.chat.configuration.FileManager.FileType;
 import farrael.fr.chat.utils.StringArray;
 
 public class ChatCommands implements CommandExecutor {
 	Chat plugin = Chat.getInstance();
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		if(args.length < 1) {

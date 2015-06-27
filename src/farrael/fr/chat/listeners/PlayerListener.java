@@ -1,6 +1,5 @@
 package farrael.fr.chat.listeners;
 
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -20,30 +20,29 @@ import org.bukkit.scheduler.BukkitRunnable;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 import farrael.fr.chat.Chat;
-import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.configuration.Configuration;
 import farrael.fr.chat.utils.StringHelper;
 
 @SuppressWarnings("deprecation")
-public class PlayerListener implements Listener{
+public class PlayerListener implements Listener {
 	Chat chat = Chat.getInstance();
-
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event){
 		if(!Configuration.ENABLE) return;
 
-		setChatName(event.getPlayer());
+		setChatName(event.getPlayer());	
 		event.setJoinMessage("");
-		if(!event.getPlayer().hasPlayedBefore() && Configuration.FIRST_MESSAGE_DISPLAY){
-			List<Player> c = new LinkedList<Player>(Arrays.asList(Bukkit.getOnlinePlayers()));
-			c.remove(event.getPlayer());
 
+		
+		List<Player> c = new LinkedList<Player>(Bukkit.getOnlinePlayers());
+		c.remove(event.getPlayer());
+
+		if(!event.getPlayer().hasPlayedBefore() && Configuration.FIRST_MESSAGE_DISPLAY){
 			StringHelper.createJsonMessage(Configuration.FIRST_MESSAGE_BROADCAST, "", event.getPlayer()).sendToList(c);
 			StringHelper.createJsonMessage(Configuration.FIRST_MESSAGE_PLAYER, "", event.getPlayer()).send(event.getPlayer());
-		} else {
-			if(!Configuration.JOIN_DISPLAY) return;
-			StringHelper.createJsonMessage(Configuration.JOIN_MESSAGE, "", event.getPlayer()).sendToAll();
-		}
+		} else if(Configuration.JOIN_DISPLAY)
+			StringHelper.createJsonMessage(Configuration.JOIN_MESSAGE, "", event.getPlayer()).sendToList(c);
 	}
 
 	@EventHandler
@@ -58,16 +57,17 @@ public class PlayerListener implements Listener{
 			StringHelper.createJsonMessage(Configuration.LEAVE_MESSAGE, "", event.getPlayer()).sendToAll();
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerSpeak(AsyncPlayerChatEvent event){
-		if(!Configuration.ENABLE) return;
+		if(!Configuration.ENABLE || event.isCancelled())
+			return;
 
 		event.setCancelled(true);
 		StringHelper.createJsonMessage(Configuration.CHAT_FORMAT, event.getMessage(), event.getPlayer()).sendToAll();
 
 		//Send Consol Message
 		if(Configuration.CONSOLE_CHAT)
-			Bukkit.getConsoleSender().sendMessage(StringHelper.getPlayerName(event.getPlayer(), false, Configuration.PLAYER_COLOR) + " : " + event.getMessage());
+			Bukkit.getConsoleSender().sendMessage(StringHelper.getPlayerName(event.getPlayer(), false, Configuration.PLAYER_COLOR) + ChatColor.GRAY + " : " + event.getMessage());
 	}
 
 	@EventHandler

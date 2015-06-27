@@ -11,14 +11,13 @@ import org.bukkit.entity.Player;
 
 import farrael.fr.chat.Chat;
 import farrael.fr.chat.classes.JsonMessage;
-import farrael.fr.chat.managers.ConfigManager;
-import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.configuration.ConfigManager;
+import farrael.fr.chat.configuration.Configuration;
 import farrael.fr.chat.utils.StringHelper;
 
 public class WhisperCommands implements CommandExecutor {
 	Chat plugin = Chat.getInstance();
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(!(sender instanceof Player))
@@ -40,7 +39,7 @@ public class WhisperCommands implements CommandExecutor {
 			target 	= Bukkit.getPlayerExact(args[0].toString());
 			message = plugin.getArguments(args, 1);
 		} else {
-			if(args.length < 2) {
+			if(args.length < 1) {
 				player.sendMessage(ChatColor.RED + "Il manque des arguments...\n" + plugin.getUsage("/r [message]"));
 				return false;
 			}
@@ -58,15 +57,24 @@ public class WhisperCommands implements CommandExecutor {
 			return plugin.sendPluginMessage(sender, "Le joueur " + args[0] + " n'est pas connecté.", true);
 
 		plugin.whisper.put(target.getUniqueId(), player.getUniqueId());
-		StringHelper.createJsonMessage(Configuration.WHISP_TO_FORMAT, message, target).replaceInText("%target%", StringHelper.getPlayerName(target, false, true)).send(player);
-		StringHelper.createJsonMessage(Configuration.WHISP_FROM_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(player, false, true)).send(target);
+		JsonMessage json;
+
+		json = StringHelper.createJsonMessage(Configuration.WHISP_TO_FORMAT, message, player);
+		StringHelper.parsePlayer(json, target, "%target%").send(player);
+
+		json = StringHelper.createJsonMessage(Configuration.WHISP_FROM_FORMAT, message, player);
+		StringHelper.parsePlayer(json, target, "%target%").send(target);
+
+		//Send Consol Message
+		if(Configuration.CONSOLE_CHAT)
+			Bukkit.getConsoleSender().sendMessage(StringHelper.getPlayerName(player, false, Configuration.PLAYER_COLOR) + ChatColor.GRAY + " to " + StringHelper.getPlayerName(target, false, Configuration.PLAYER_COLOR) + ChatColor.GRAY + " : " + message);
 
 		if(!plugin.spy.isEmpty()) {
-			JsonMessage spy_message = StringHelper.createJsonMessage(Configuration.WHISP_SPY_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(target, false, true));
+			json = StringHelper.createJsonMessage(Configuration.WHISP_SPY_FORMAT, message, player).replaceInText("%target%", StringHelper.getPlayerName(target, false, true));
 			for(UUID uuid : plugin.spy){
 				Player spy = Bukkit.getPlayer(uuid);
 				if(spy != null && spy.isOnline() && spy.getUniqueId() != target.getUniqueId() && spy.getUniqueId() != player.getUniqueId())
-					spy_message.send(spy);
+					json.send(spy);
 			}
 		}
 

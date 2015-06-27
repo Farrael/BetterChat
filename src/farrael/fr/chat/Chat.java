@@ -15,11 +15,11 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import farrael.fr.chat.commands.ChatCommands;
 import farrael.fr.chat.commands.WhisperCommands;
+import farrael.fr.chat.configuration.ConfigManager;
+import farrael.fr.chat.configuration.FileManager;
+import farrael.fr.chat.configuration.FileManager.FileType;
 import farrael.fr.chat.listeners.PermissionsExListener;
 import farrael.fr.chat.listeners.PlayerListener;
-import farrael.fr.chat.managers.ConfigManager;
-import farrael.fr.chat.managers.FileManager;
-import farrael.fr.chat.managers.FileManager.FileType;
 
 public class Chat extends JavaPlugin{
 

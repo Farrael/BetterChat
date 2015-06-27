@@ -4,12 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.server.v1_8_R1.ChatSerializer;
-import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 public class JsonMessage {
 
@@ -46,6 +47,20 @@ public class JsonMessage {
 			this.part.get(actual_part).copyColor(this.part.get(actual_part - 1));
 
 		return this.getPart();
+	}
+
+	/**
+	 * Create translate node
+	 * @param item
+	 */
+	public JsonPart translate(ItemStack item) {
+		this.apply();
+		this.actual_part++;
+		this.part.add(new JsonPart());
+		if(this.actual_part > 0)
+			this.part.get(actual_part).copyColor(this.part.get(actual_part - 1));
+
+		return this.getPart().translate(item);
 	}
 
 	/**
@@ -204,7 +219,6 @@ public class JsonMessage {
 	/**
 	 * Send to all players
 	 */
-	@SuppressWarnings("deprecation")
 	public void sendToAll(){
 		for (Player p: Bukkit.getOnlinePlayers())
 			this.send(p);

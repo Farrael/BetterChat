@@ -1,6 +1,10 @@
 package farrael.fr.chat.utils;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -9,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 
 import farrael.fr.chat.Chat;
 import farrael.fr.chat.classes.JsonMessage;
-import farrael.fr.chat.storage.Configuration;
+import farrael.fr.chat.configuration.Configuration;
 
 public class StringHelper {
 
@@ -56,12 +60,8 @@ public class StringHelper {
 		Location l  = player.getLocation();
 		message 	= message.replace("\\", "\\\\").replace("\"", "\\\"");
 
-		JsonMessage json = new JsonMessage(format);
-
-		// Format player
-		json.replace("%player%").text(getPlayerName(player, true, Configuration.PLAYER_COLOR));
-		if(Configuration.PLAYER_HOVER) json.getPart().hover(Configuration.PLAYER_HOVER_MESSAGE);
-		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion(Configuration.PLAYER_CLICK_MESSAGE.replace("%player%", name)).close();
+		// Default/Player format
+		JsonMessage json = parsePlayer(new JsonMessage(format), player, "%player%");
 
 		// Format variable
 		json.replaceInText("%server%", Chat.getInstance().getServer().getName());
@@ -84,7 +84,30 @@ public class StringHelper {
 			json.replace("%item%").text(ChatColor.GRAY + "[" + item_name + ChatColor.GRAY + "]").color(getColorFromString(ChatColor.COLOR_CHAR, item_name, false)).tooltip(item);
 		}
 
+		// Urls parsing
+		List<String> urls = extractUrls(json.getText());
+		if(!urls.isEmpty()){
+			for(int i = 0; i < urls.size(); i++){
+				json.replace(urls.get(i)).text("[Lien]").color(ChatColor.ITALIC).color(ChatColor.GRAY).hover(ChatColor.DARK_PURPLE + urls.get(i)).click().openlink(urls.get(i)).close();
+			}
+		}
+
 		return json.finish();
+	}
+
+	/**
+	 * Parse player name, using configuration
+	 * @param json - JsonMessage to change
+	 * @param player - Player informations
+	 * @param string - String to replace
+	 * @param color - Using color
+	 */
+	public static JsonMessage parsePlayer(JsonMessage json, Player player, String string){
+		json.replace(string).text(getPlayerName(player, true, Configuration.PLAYER_COLOR));
+		if(Configuration.PLAYER_HOVER) json.getPart().hover(Configuration.PLAYER_HOVER_MESSAGE);
+		if(Configuration.PLAYER_CLICK) json.getPart().click().chatSuggestion(Configuration.PLAYER_CLICK_MESSAGE.replace("%player%", player.getName())).close();
+		json.getPart().replaceInText("%time%", (new java.text.SimpleDateFormat("HH:mm:ss")).format(new Date()));
+		return json.translateColorCode('&');
 	}
 
 	/**
@@ -93,5 +116,22 @@ public class StringHelper {
 	public static String getPlayerName(Player player, boolean display, boolean color){
 		String name = (display ? (player.getDisplayName() != null ? player.getDisplayName() : player.getName()) : player.getName());
 		return (color ? (player.hasMetadata("color") ? player.getMetadata("color").get(0).asString() : "") : "") + name;
+	}
+
+	/**
+	 * Returns a list with all links contained in the input
+	 */
+	public static List<String> extractUrls(String text) {
+		List<String> containedUrls = new ArrayList<String>();
+		String urlRegex = "((https?|ftp|gopher|telnet|file):((//)|(\\\\))+[\\w\\d:#@%/;$()~_?\\+-=\\\\\\.&]*)";
+		Pattern pattern = Pattern.compile(urlRegex, Pattern.CASE_INSENSITIVE);
+		Matcher urlMatcher = pattern.matcher(text);
+
+		while (urlMatcher.find()) {
+			containedUrls.add(text.substring(urlMatcher.start(0),
+					urlMatcher.end(0)));
+		}
+
+		return containedUrls;
 	}
 }

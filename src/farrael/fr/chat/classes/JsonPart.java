@@ -5,13 +5,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import net.minecraft.server.v1_8_R1.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import farrael.fr.chat.utils.Reflection;
 
 public class JsonPart {
 	private String string;
@@ -19,6 +21,7 @@ public class JsonPart {
 
 	private ChatColor color;
 	private ArrayList<ChatColor> style;
+	private boolean translate = false;
 
 	/**
 	 * Create new JsonPart empty
@@ -51,6 +54,29 @@ public class JsonPart {
 	}
 
 	/**
+	 * Translate given string (cf minecraft)
+	 * @param value - value to translate
+	 */
+	public JsonPart translate(String value) {
+		this.string += "\"translate\":\"" + value + "\"";
+		this.translate = true;
+		return this;
+	}
+
+	/**
+	 * Translate given itemstack
+	 * @param item - itemstack to translate
+	 */
+	public JsonPart translate(ItemStack item) {
+		try{
+			Object nmsItem = Reflection.getMethod(Reflection.getOBCClass("inventory.CraftItemStack"), "asNMSCopy", ItemStack.class).invoke(null, item);
+			this.string += "\"translate\":" + (String) Reflection.getMethod(nmsItem.getClass(), "a").invoke(nmsItem) + ".name";
+			this.translate = true;
+		} catch(Exception e) {};
+		return this;
+	}
+
+	/**
 	 * Create hover event
 	 * @param message - message to display
 	 */
@@ -79,7 +105,7 @@ public class JsonPart {
 			this.color = null;
 			this.style.clear();
 		} else {
-			if(color.isColor())
+			if(color.isColor() && this.color == null)
 				this.color = color;
 			else {
 				this.style.add(color);
@@ -149,16 +175,6 @@ public class JsonPart {
 	}
 
 	/**
-	 * Translate given string (cf minecraft)
-	 * @param value - value to translate
-	 * @return
-	 */
-	public JsonPart translate(String value) {
-		this.string += ",{\"translate\":" + value;
-		return this;
-	}
-
-	/**
 	 * Create item event
 	 * @param item - item informations to display
 	 */
@@ -185,7 +201,7 @@ public class JsonPart {
 			item.setItemMeta(meta);
 		}
 
-		net.minecraft.server.v1_8_R1.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound root = nmsItem.save(new NBTTagCompound());
 
 		this.string += ",\"hoverEvent\":{\"action\":\"show_item\",\"value\":\"" + (root.toString()).replace("\"", "") + "\"}";
@@ -281,7 +297,7 @@ public class JsonPart {
 	 * Return written text with/without parsing
 	 */
 	public String getText() {
-		return "{\"text\":\"" + this.text + "\"" + this.string + this.colorize() + "}";
+		return "{" + (!this.translate ? ("\"text\":\"" + this.text + "\"") : "") + this.string + this.colorize() + "}";
 	}
 
 	/**
